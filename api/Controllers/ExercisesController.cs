@@ -1,6 +1,7 @@
 using GymApi.Data;
 using GymApi.DTOs;
 using GymApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,7 @@ namespace GymApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class ExercisesController : ControllerBase
 {
     private readonly GymDbContext _context;

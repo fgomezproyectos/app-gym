@@ -1,20 +1,42 @@
 @GymApi_HostAddress = http://localhost:5211
 
-### GET todos los ejercicios
+### 1. Registrar usuario
+POST {{GymApi_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Fran",
+  "email": "fran@gymapp.com",
+  "password": "Password123!"
+}
+
+###
+
+### 2. Login (copia el token de la respuesta en @token)
+POST {{GymApi_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "fran@gymapp.com",
+  "password": "Password123!"
+}
+
+###
+
+### --- Pega aquí el token recibido en el login ---
+@token = PEGA_AQUI_EL_TOKEN
+
+### 3. GET todos los ejercicios (requiere token)
 GET {{GymApi_HostAddress}}/api/exercises
 Accept: application/json
+Authorization: Bearer {{token}}
 
 ###
 
-### GET un ejercicio por id
-GET {{GymApi_HostAddress}}/api/exercises/1
-Accept: application/json
-
-###
-
-### POST crear ejercicio
+### 4. POST crear ejercicio (requiere token)
 POST {{GymApi_HostAddress}}/api/exercises
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Press banca",
@@ -24,9 +46,10 @@ Content-Type: application/json
 
 ###
 
-### PUT editar ejercicio
+### 5. PUT editar ejercicio (requiere token)
 PUT {{GymApi_HostAddress}}/api/exercises/1
 Content-Type: application/json
+Authorization: Bearer {{token}}
 
 {
   "name": "Press banca plano",
@@ -36,8 +59,8 @@ Content-Type: application/json
 
 ###
 
-### DELETE eliminar ejercicio
+### 6. DELETE eliminar ejercicio (requiere token)
 DELETE {{GymApi_HostAddress}}/api/exercises/1
-Accept: application/json
+Authorization: Bearer {{token}}
 
 ###
