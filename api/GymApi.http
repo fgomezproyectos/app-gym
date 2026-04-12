@@ -24,7 +24,7 @@ Content-Type: application/json
 ###
 
 ### --- Pega aquí el token recibido en el login ---
-@token = PEGA_AQUI_EL_TOKEN
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJmcmFuQGd5bWFwcC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRnJhbiIsImV4cCI6MTc3NjU5MTUzNSwiaXNzIjoiR3ltQXBpIiwiYXVkIjoiR3ltQXBwIn0.bZNmhCZyk_BdimJ99t5PerppKFSPJ0ARDeJibqgUNGU
 
 ### 3. GET todos los ejercicios (requiere token)
 GET {{GymApi_HostAddress}}/api/exercises

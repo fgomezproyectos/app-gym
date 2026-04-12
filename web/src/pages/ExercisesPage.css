@@ -1,0 +1,99 @@
+/*
+  ExercisesPage.css — Estilos exclusivos de la página de ejercicios.
+  Usa también: src/styles/general.css (clase .error)
+*/
+
+.page {
+  min-height: 100svh;
+  background: #0d0e14;
+}
+
+.page-header {
+  background: #1a1b23;
+  padding: 0.9rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #2e3044;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.page-header h1 {
+  font-size: 1.25rem;
+  color: #eaeaea;
+}
+
+.btn-logout {
+  padding: 0.45rem 0.9rem;
+  background: transparent;
+  border: 1.5px solid #2e3044;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: #8b8fa8;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-logout:active { background: #22243a; }
+
+.page main {
+  padding: 1.25rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.page main h2 {
+  font-size: 1.1rem;
+  color: #8b8fa8;
+  margin-bottom: 1rem;
+}
+
+.exercise-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 600px) {
+  .exercise-list { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 900px) {
+  .exercise-list { grid-template-columns: repeat(3, 1fr); }
+}
+
+.exercise-card {
+  background: #1a1b23;
+  border: 1px solid #2e3044;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.exercise-card h3 {
+  font-size: 1rem;
+  color: #eaeaea;
+  margin-bottom: 0.4rem;
+}
+
+.exercise-card p {
+  font-size: 0.85rem;
+  color: #8b8fa8;
+  margin-top: 0.4rem;
+  line-height: 1.4;
+}
+
+.muscle-group {
+  display: inline-block;
+  font-size: 0.72rem;
+  background: rgba(79, 142, 247, 0.15);
+  color: #4f8ef7;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}

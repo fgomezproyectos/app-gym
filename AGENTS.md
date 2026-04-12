@@ -10,11 +10,9 @@ App de gestión de ejercicios de gimnasio. Mono-repo con backend .NET y frontend
 | Frontend | React 19 + Vite |
 | ORM | EF Core + Npgsql |
 | BD local | PostgreSQL en Docker |
-| BD producción | Supabase (PostgreSQL) |
-| CI/CD | GitHub Actions |
-| Hosting backend | Fly.io |
+| BD producción | Neon (PostgreSQL) |
+| Hosting backend | Render (Docker) |
 | Hosting frontend | Vercel |
-| Imágenes Docker | GHCR (GitHub Container Registry) |
 
 ## Repositorio GitHub
 
@@ -39,10 +37,27 @@ App-Gym/
 │   ├── Data/
 │   │   └── GymDbContext.cs
 │   ├── Migrations/                 ← 3 migraciones aplicadas
+│   ├── Dockerfile                  ← Multi-stage: sdk build → aspnet runtime
 │   ├── GymApi.http                 ← Peticiones de prueba (REST Client)
-│   ├── Program.cs                  ← JWT + EF Core configurados
+│   ├── Program.cs                  ← JWT + EF Core + auto-migración al arrancar
 │   └── appsettings.json            ← Connection string + config JWT
-├── web/                            ← React + Vite (scaffold inicial, sin desarrollar)
+├── docker-compose.yml              ← Solo levanta la API (puerto 8080), conecta a gym-postgres vía red gym-net
+├── web/
+│   ├── index.html
+│   ├── src/
+│   │   ├── main.jsx
+│   │   ├── App.jsx                 ← Router principal (rutas + PrivateRoute)
+│   │   ├── index.css               ← Reset global + tema oscuro base
+│   │   ├── styles/
+│   │   │   └── general.css         ← Estilos compartidos (.auth-*, .error)
+│   │   ├── pages/
+│   │   │   ├── LoginPage.jsx       ← /login
+│   │   │   ├── RegisterPage.jsx    ← /register
+│   │   │   ├── ExercisesPage.jsx   ← /exercises (protegida)
+│   │   │   └── ExercisesPage.css   ← Estilos exclusivos de exercises
+│   │   └── services/
+│   │       └── api.js              ← Llamadas a la API (login, register, getExercises)
+│   └── package.json
 └── AGENTS.md
 ```
 
@@ -73,14 +88,24 @@ App-Gym/
 - Autenticación JWT: register y login, contraseñas con BCrypt
 - ExercisesController protegido con `[Authorize]`
 - Archivo GymApi.http con todas las llamadas de prueba
+- Dockerfile multi-stage para el backend
+- docker-compose.yml (solo API, conecta a gym-postgres existente vía red gym-net)
+- Auto-migración en Program.cs al arrancar (`db.Database.Migrate()`)
+- CORS configurado en Program.cs (origen permitido configurable en appsettings.json)
+- Frontend React: login, registro, listado de ejercicios
+- Tema oscuro, diseño mobile-first
+- Estructura CSS por página con estilos compartidos en general.css
 - Primer commit y push a GitHub
+- Dockerfile multi-stage para el backend
+- docker-compose.yml (solo API, conecta a gym-postgres existente vía red gym-net)
+- Auto-migración en Program.cs al arrancar (`db.Database.Migrate()`)
 
 ### ⏳ Pendiente
-- Dockerfile para el backend
-- GitHub Actions (CI/CD: build → push imagen a GHCR → deploy a Fly.io)
-- Conectar frontend a Vercel
-- Supabase (BD producción) + secret DATABASE_URL en GitHub
+- Crear BD en Neon y obtener connection string
+- Desplegar backend en Render (conectar repo GitHub → Docker)
+- Conectar frontend en Vercel (conectar repo GitHub)
 - Desarrollar el frontend React (páginas, componentes, llamadas a la API)
+- Commit y push pendiente: Dockerfile + docker-compose + auto-migración
 
 ## Decisiones tomadas
 
@@ -93,28 +118,48 @@ App-Gym/
 ## Comandos habituales
 
 ```bash
-# Backend
+# Backend — desarrollo diario
+docker start gym-postgres            ← arrancar BD
 cd api
-dotnet run
-dotnet ef migrations add <Nombre>   ← BD debe estar arrancada
-dotnet ef database update
+dotnet run                           ← API en puerto 5211
 
-# Frontend
-cd web
-npm run dev
+# Docker Compose — simular producción
+docker start gym-postgres
+cd D:\GIT\App-Gym
+docker compose up                    ← API en puerto 8080 (Docker)
 
-# Docker — BD local
-docker start gym-postgres            ← arrancar contenedor
-docker stop gym-postgres             ← parar contenedor
+# Docker — red gym-net (solo configurar una vez)
+docker network create gym-net
+docker network connect gym-net gym-postgres
+
+# Parar contenedores
+docker stop gym-postgres
 
 # Nota: Docker Hub bloqueado en esta red por TLS
 # Para descargar imágenes nuevas usar mirror de Google:
 docker pull mirror.gcr.io/library/postgres:16-alpine
 docker tag mirror.gcr.io/library/postgres:16-alpine postgres:16-alpine
 
+# Frontend
+cd web
+npm run dev
+
+# Migraciones
+dotnet ef migrations add <Nombre>   ← BD debe estar arrancada
+dotnet ef database update
+
 # Git
 git add . ; git commit -m "mensaje" ; git push
 ```
+
+## Convenciones de CSS y JS (frontend)
+
+- **CSS por página:** cada página tiene su propio fichero CSS (`NombrePágina.css`) junto al `.jsx`.
+- **Estilos compartidos:** van en `src/styles/general.css`. Al inicio del fichero hay un comentario indicando qué clases contiene y en qué páginas se usan.
+- **Si una clase se usa en más de una página**, va en `general.css`, nunca duplicada.
+- **JS compartido:** funciones reutilizables van en `src/services/`. Cada función tiene un comentario indicando en qué páginas se usa.
+- **Tema:** oscuro por defecto. Paleta base: fondo `#0d0e14`, tarjeta `#1a1b23`, borde `#2e3044`, texto `#eaeaea`, azul acento `#4f8ef7`.
+- **Mobile-first:** breakpoints `min-width: 600px` y `min-width: 900px`.
 
 ## Convenciones
 
