@@ -1,0 +1,43 @@
+@GymApi_HostAddress = http://localhost:5211
+
+### GET todos los ejercicios
+GET {{GymApi_HostAddress}}/api/exercises
+Accept: application/json
+
+###
+
+### GET un ejercicio por id
+GET {{GymApi_HostAddress}}/api/exercises/1
+Accept: application/json
+
+###
+
+### POST crear ejercicio
+POST {{GymApi_HostAddress}}/api/exercises
+Content-Type: application/json
+
+{
+  "name": "Press banca",
+  "muscleGroup": "Pecho",
+  "description": "Ejercicio de empuje horizontal"
+}
+
+###
+
+### PUT editar ejercicio
+PUT {{GymApi_HostAddress}}/api/exercises/1
+Content-Type: application/json
+
+{
+  "name": "Press banca plano",
+  "muscleGroup": "Pecho",
+  "description": "Ejercicio de empuje horizontal con barra"
+}
+
+###
+
+### DELETE eliminar ejercicio
+DELETE {{GymApi_HostAddress}}/api/exercises/1
+Accept: application/json
+
+###

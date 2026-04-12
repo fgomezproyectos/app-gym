@@ -1,0 +1,228 @@
+Contexto del proyecto — GymApp (.NET + React)
+==============================================
+App de ejercicios de gimnasio. Backend ASP.NET Core + frontend React (Vite).
+Despliegue automático al subir a GitHub. Hosting gratuito.
+Desarrollado íntegramente desde VS Code (sin Visual Studio).
+
+Herramientas instaladas (verificado)
+--------------------------------------
+- .NET SDK 8.0.419
+- Node.js v24.14.0 / npm 11.9.0
+- Docker Desktop 29.1.3
+- Git 2.52.0
+- VS Code con extensiones:
+    - C# Dev Kit (Microsoft)         ← intellisense y compilación .NET
+    - REST Client (Huachao Mao)      ← ejecutar peticiones HTTP desde archivos .http en VS Code
+    - PostgreSQL (Chris Kolkman)     ← explorar la BD desde VS Code
+- dotnet-ef 8.0.11 (global tool)
+- Npgsql.EntityFrameworkCore.PostgreSQL 8.0.11
+- Microsoft.EntityFrameworkCore.Design 8.0.11
+
+Nota Docker: Docker Hub bloquea descargas directas por certificado TLS en esta red.
+Solución aplicada: usar mirror de Google para descargar la imagen.
+  docker pull mirror.gcr.io/library/postgres:16-alpine
+  docker tag mirror.gcr.io/library/postgres:16-alpine postgres:16-alpine
+
+Stack definitivo
+-----------------
+- Backend:   ASP.NET Core Web API (.NET 8)
+- Frontend:  React + Vite
+- ORM:       EF Core + Npgsql (provider Postgres)
+- BD local:  PostgreSQL en contenedor Docker (mismo motor que producción)
+- BD prod:   Supabase (Postgres, plan gratuito)
+- CI/CD:     GitHub Actions
+- Imágenes:  GHCR (GitHub Container Registry)
+- Hosting:   Backend → Fly.io / Frontend → Vercel
+
+Estructura del repo (mono-repo)
+---------------------------------
+App-Gym/
+├── api/                        ← ASP.NET Core Web API (GymApi)
+│   ├── Controllers/            ← Endpoints HTTP
+│   ├── Models/                 ← Entidades de BD
+│   ├── DTOs/                   ← Objetos de entrada/salida de la API
+│   ├── Data/                   ← GymDbContext (EF Core)
+│   ├── Services/               ← Lógica de negocio
+│   └── Program.cs
+├── web/                        ← React + Vite
+│   └── src/
+│       ├── components/
+│       ├── pages/
+│       └── services/           ← Llamadas a la API
+├── .github/workflows/
+│   └── ci-cd-api.yml
+└── Idea.txt
+
+Modelo de datos
+----------------
+User  ──< Workout ──< WorkoutExercise >── Exercise
+- Un usuario tiene muchos entrenamientos
+- Un entrenamiento tiene muchos ejercicios (tabla intermedia con series/reps/peso)
+
+Base de datos
+--------------
+Local (Docker):
+  docker run -d --name gym-postgres \
+    -e POSTGRES_USER=gymuser \
+    -e POSTGRES_PASSWORD=gympass \
+    -e POSTGRES_DB=gymdb \
+    -p 5432:5432 postgres:16-alpine
+
+  Connection string (appsettings.Development.json):
+  "Host=localhost;Port=5432;Database=gymdb;Username=gymuser;Password=gympass"
+
+Producción (Supabase):
+  Variable de entorno DATABASE_URL con el string de conexión de Supabase.
+  El código no cambia — solo cambia el valor del connection string.
+
+Flujo de datos
+---------------
+React → fetch/axios → Controller → Service → EF Core (Npgsql) → Postgres
+
+Arquitectura backend
+---------------------
+- Sin Clean Architecture ni DDD — patrón Servicio simple (MVP)
+- DTOs separados de los modelos (no se expone la BD directamente)
+- JWT para autenticación (sin IdentityServer)
+- Program.cs configura DbContext con Npgsql en todos los entornos
+
+CI/CD (GitHub Actions)
+-----------------------
+1. Build + test (.NET)
+2. Build imagen Docker del backend y push a GHCR
+3. Deploy a Fly.io con flyctl (si FLY_API_TOKEN está configurado)
+Frontend: Vercel despliega automáticamente en cada push a main.
+
+Secrets a configurar en GitHub
+--------------------------------
+- DATABASE_URL       → cadena de conexión Supabase
+- FLY_API_TOKEN      → token de Fly.io para deploy automático
+- GITHUB_TOKEN       → automático, para push a GHCR
+
+Cómo arrancar en local (cada vez que retomes el proyecto)
+-----------------------------------------------------------
+PASO 1 — Arrancar Docker Desktop
+  Abre Docker Desktop desde el menú Inicio.
+  Espera a que el icono de la ballena en la barra de tareas quede estático.
+
+PASO 2 — Levantar Postgres (terminal)
+  docker start gym-postgres
+
+PASO 3 — Backend (terminal 1)
+  cd D:\GIT\App-Gym\api
+  dotnet run
+  → disponible en http://localhost:5XXX (el puerto lo indica la consola)
+
+PASO 4 — Frontend (terminal 2)
+  cd D:\GIT\App-Gym\web
+  npm run dev
+  → disponible en http://localhost:5173
+
+Para parar todo:
+  Ctrl+C en cada terminal
+  docker stop gym-postgres
+
+Comandos clave (referencia)
+-----------------------------
+Levantar BD local:      docker start gym-postgres
+Parar BD local:         docker stop gym-postgres
+Crear backend:          dotnet new webapi -n GymApi -o api --no-openapi
+Crear frontend:         npm create vite@latest web -- --template react
+Añadir EF Core:         dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
+                        dotnet add package Microsoft.EntityFrameworkCore.Design
+Migraciones:            dotnet ef migrations add InitialCreate
+                        dotnet ef database update
+Ejecutar backend:       dotnet run (desde /api)
+Ejecutar frontend:      npm run dev (desde /web)
+
+Checklist primera versión
+--------------------------
+- [x] Levantar contenedor Postgres local (gym-postgres en Docker)
+- [x] Scaffold /api con dotnet new webapi
+- [x] Scaffold /web con npm create vite (React + Vite)
+- [x] Instalar paquetes EF Core + Npgsql (v8.0.11)
+- [x] Crear modelos: User, Exercise, Workout, WorkoutExercise
+- [x] Crear GymDbContext y configurar en Program.cs
+- [x] Primera migración y dotnet ef database update (tablas creadas en Postgres)
+- [x] .gitignore creado
+- [ ] Primer commit a GitHub
+- [ ] CRUD básico: Exercises (Controller + Service)
+- [ ] Autenticación JWT (registro + login)
+- [ ] Dockerfile funcional para /api
+- [ ] Workflow GitHub Actions (build/test/push image)
+- [ ] Conectar frontend a Vercel
+- [ ] Provisionar Supabase y añadir DATABASE_URL a secrets de GitHub
+- [ ] Probar despliegue automático al push a main
+
+Conexión a Postgres desde VS Code
+-----------------------------------
+Usando la extensión de PostgreSQL instalada en VS Code:
+  Host:     localhost
+  Port:     5432
+  Database: gymdb
+  Username: gymuser
+  Password: gympass
+  SSL:      disabled
+
+Tablas creadas (tras migración InitialCreate):
+  - Users
+  - Exercises
+  - Workouts
+  - WorkoutExercises
+  - __EFMigrationsHistory (control interno de EF Core)
+
+Ejemplo de queries útiles:
+  SELECT * FROM "Users";
+  SELECT * FROM "Exercises";
+  INSERT INTO "Exercises" ("Name", "MuscleGroup", "Description")
+  VALUES ('Press banca', 'Pecho', 'Ejercicio de empuje horizontal');
+
+Cómo añadir/modificar cosas en la base de datos (EF Core)
+-----------------------------------------------------------
+
+ESQUEMA (tablas y columnas):
+  Los modelos están en api/Models/ — ahí se definen las tablas.
+  Para añadir un campo nuevo a una tabla:
+    1. Añadir la propiedad en el fichero Model correspondiente
+       Ejemplo en Exercise.cs:
+         public string Prueba { get; set; } = string.Empty;
+    2. Crear la migración — ejecutar en terminal desde api/:
+         cd D:\GIT\App-Gym\api
+         dotnet ef migrations add NombreDescriptivo
+       Esto genera un fichero nuevo en Migrations/ con el SQL (ALTER TABLE...)
+       → NUNCA editar los ficheros de Migrations/ a mano
+    3. Aplicar a la BD — ejecutar en terminal desde api/:
+         dotnet ef database update
+       EF Core compara con __EFMigrationsHistory y ejecuta solo las pendientes.
+       → La BD debe estar arrancada (docker start gym-postgres)
+
+  Para añadir una tabla nueva:
+    1. Crear un fichero nuevo en Models/ con la clase
+    2. Añadir un DbSet<NuevaClase> en Data/GymDbContext.cs
+    3. cd D:\GIT\App-Gym\api
+       dotnet ef migrations add NombreDescriptivo
+    4. dotnet ef database update
+
+  Para deshacer una migración (si aún no se aplicó a producción):
+    dotnet ef migrations remove        ← borra el último fichero de Migrations/
+    (si ya se aplicó, mejor crear una migración de reversión)
+
+  Para volver a una versión anterior de la BD:
+    dotnet ef database update NombreDeLaMigracionDestino
+
+DATOS (filas):
+  Para insertar/consultar/modificar datos se usan los Controllers.
+  El Controller recibe el DbContext por inyección de dependencias y opera:
+    await _context.Exercises.ToListAsync()          ← SELECT *
+    await _context.Exercises.FindAsync(id)          ← SELECT WHERE Id = id
+    _context.Exercises.Add(obj); await _context.SaveChangesAsync()  ← INSERT
+    _context.Exercises.Remove(obj); await _context.SaveChangesAsync() ← DELETE
+
+Decisiones tomadas
+--------------------
+- Postgres en Docker en local: mismo motor que producción, cero diferencias.
+- Npgsql como único proveedor EF Core (dev y prod).
+- Sin SQLite: simplifica la configuración y evita diferencias de comportamiento.
+- Mono-repo: todo en App-Gym, más simple de gestionar para un proyecto de este tamaño.
+- VS Code en lugar de Visual Studio: más ligero, mejor integración con terminal y Docker.
+- Secrets siempre fuera del repo (nunca en appsettings.json de producción).
