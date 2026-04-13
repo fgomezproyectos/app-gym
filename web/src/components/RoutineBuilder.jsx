@@ -71,7 +71,7 @@ export function RoutineBuilder({ onSave }) {
                 onChange={e => updateExercise(exercise.id, 'name', e.target.value)}
                 placeholder="Nombre del ejercicio"
                 className="form-input"
-                style={{ flex: 1, padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
+                style={{ flex: 1, width: 0, padding: '0.5rem 0.75rem', fontSize: '0.85rem' }}
               />
               {exercises.length > 1 && (
                 <button
@@ -90,8 +90,9 @@ export function RoutineBuilder({ onSave }) {
                 <input
                   type="number"
                   min="1"
+                  max="20"
                   value={exercise.sets}
-                  onChange={e => updateExercise(exercise.id, 'sets', parseInt(e.target.value) || 0)}
+                  onChange={e => updateExercise(exercise.id, 'sets', Math.max(1, parseInt(e.target.value) || 1))}
                   className="field-input"
                 />
               </div>
@@ -100,8 +101,9 @@ export function RoutineBuilder({ onSave }) {
                 <input
                   type="number"
                   min="1"
+                  max="100"
                   value={exercise.reps}
-                  onChange={e => updateExercise(exercise.id, 'reps', parseInt(e.target.value) || 0)}
+                  onChange={e => updateExercise(exercise.id, 'reps', Math.max(1, parseInt(e.target.value) || 1))}
                   className="field-input"
                 />
               </div>

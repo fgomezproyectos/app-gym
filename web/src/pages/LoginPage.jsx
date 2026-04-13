@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { Eye, EyeOff, Dumbbell } from 'lucide-react';
 import { login } from '../services/api';
+import { AnimatedBackground } from '../components/AnimatedBackground';
 import '../styles/general.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,30 +30,56 @@ export default function LoginPage() {
 
   return (
     <div className="auth-container">
-      <div className="auth-card">
-        <h1>GymApp</h1>
-        <h2>Iniciar sesión</h2>
+      <AnimatedBackground />
+      <div className="auth-wrapper">
+        <div className="auth-logo">
+          <div className="auth-logo-icon">
+            <Dumbbell size={32} color="white" />
+          </div>
+          <h1>GymApp</h1>
+          <p>Iniciar sesión</p>
+        </div>
+
         <form onSubmit={handleSubmit}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={e => setEmail(e.target.value)}
-            required
-            autoFocus
-          />
-          <label>Contraseña</label>
-          <input
-            type="password"
-            value={password}
-            onChange={e => setPassword(e.target.value)}
-            required
-          />
-          {error && <p className="error">{error}</p>}
-          <button type="submit" disabled={loading}>
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
+          <div className="auth-card">
+            <label>Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="tu@email.com"
+              required
+              autoFocus
+            />
+            <label>Contraseña</label>
+            <div className="input-password-wrapper">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                placeholder="Tu contraseña"
+                required
+              />
+              <button
+                type="button"
+                className="btn-show-password"
+                onClick={() => setShowPassword(v => !v)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {error && <p className="error">{error}</p>}
+            <button type="submit" disabled={loading}>
+              {loading ? (
+                <span className="btn-spinner">
+                  <span className="spinner" />
+                  Entrando...
+                </span>
+              ) : 'Entrar'}
+            </button>
+          </div>
         </form>
+
         <p className="auth-link">¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
       </div>
     </div>

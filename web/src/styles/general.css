@@ -2,9 +2,9 @@
   general.css — Estilos compartidos entre varias páginas.
   Importar en cualquier página que use estas clases.
 
-  .error         → LoginPage, RegisterPage
-  .auth-*        → LoginPage, RegisterPage
-  .auth-link     → LoginPage, RegisterPage
+  .error            → LoginPage, RegisterPage
+  .auth-*           → LoginPage, RegisterPage
+  .animated-bg / .blob / .bg-grid → AnimatedBackground (LoginPage, RegisterPage)
 */
 
 /* === Error === */
@@ -25,83 +25,231 @@
   justify-content: center;
   padding: 1rem;
   background: #0d0e14;
+  position: relative;
+  overflow: hidden;
 }
 
-.auth-card {
-  background: #1a1b23;
-  padding: 2rem 1.5rem;
-  border-radius: 16px;
-  border: 1px solid #2e3044;
+.auth-wrapper {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
+  position: relative;
+  z-index: 10;
 }
 
-.auth-card h1 {
-  font-size: 2rem;
+/* — Logo — */
+.auth-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.auth-logo-icon {
+  width: 4rem;
+  height: 4rem;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, #4f8ef7, #3b82f6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  box-shadow: 0 8px 24px rgba(79, 142, 247, 0.25);
+}
+
+.auth-logo h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
   color: #eaeaea;
-  margin-bottom: 0.15rem;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.2rem;
 }
 
-.auth-card h2 {
-  font-size: 1rem;
-  font-weight: 400;
+.auth-logo p {
   color: #8b8fa8;
-  margin-bottom: 1.75rem;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* — Card — */
+.auth-card {
+  background: rgba(26, 27, 35, 0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 1.5rem;
+  border-radius: 1.25rem;
+  border: 1px solid #2e3044;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
 }
 
 .auth-card label {
   display: block;
   font-size: 0.85rem;
-  font-weight: 600;
-  margin-bottom: 5px;
-  color: #c4c7d6;
+  font-weight: 500;
+  color: #eaeaea;
+  margin-bottom: 0.5rem;
 }
 
 .auth-card input {
   width: 100%;
   padding: 0.75rem 1rem;
   border: 1.5px solid #2e3044;
-  border-radius: 10px;
+  border-radius: 0.75rem;
   font-size: 1rem;
   margin-bottom: 1rem;
-  background: #0d0e14;
+  background: rgba(13, 14, 20, 0.8);
   color: #eaeaea;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   -webkit-appearance: none;
+  box-sizing: border-box;
 }
+
+.auth-card input::placeholder { color: #4a4d60; }
 
 .auth-card input:focus {
   outline: none;
-  border-color: #4f8ef7;
+  border-color: rgba(79, 142, 247, 0.7);
   box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.15);
 }
 
+/* — Password toggle — */
+.input-password-wrapper {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.input-password-wrapper input {
+  margin-bottom: 0;
+  padding-right: 3rem;
+}
+
+.btn-show-password {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #8b8fa8;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+.btn-show-password:hover { color: #eaeaea; }
+
+/* — Submit button — */
 .auth-card button[type="submit"] {
   width: 100%;
   padding: 0.85rem;
-  background: #4f8ef7;
+  background: linear-gradient(135deg, #4f8ef7, #3b82f6);
   color: white;
   border: none;
-  border-radius: 10px;
+  border-radius: 0.75rem;
   font-size: 1rem;
   font-weight: 600;
   margin-top: 0.25rem;
-  transition: background 0.2s;
+  transition: filter 0.2s, transform 0.1s;
+  box-shadow: 0 4px 16px rgba(79, 142, 247, 0.25);
   -webkit-tap-highlight-color: transparent;
 }
-
-.auth-card button[type="submit"]:active { background: #3672d8; }
+.auth-card button[type="submit"]:hover { filter: brightness(1.1); }
+.auth-card button[type="submit"]:active { transform: scale(0.98); }
 .auth-card button[type="submit"]:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* — Spinner — */
+.btn-spinner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* — Footer link — */
 .auth-link {
   text-align: center;
   margin-top: 1.25rem;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   color: #8b8fa8;
 }
 
 .auth-link a {
   color: #4f8ef7;
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.auth-link a:hover { color: #7aabff; }
+
+/* === Fondo animado === */
+/* Compartido por: AnimatedBackground → LoginPage, RegisterPage */
+
+.animated-bg {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  animation: blob 8s ease-in-out infinite;
+}
+
+.blob-blue {
+  width: 500px;
+  height: 500px;
+  background: linear-gradient(135deg, #4f8ef7, #6366f1);
+  opacity: 0.18;
+  top: 10%;
+  left: 20%;
+}
+
+.blob-green {
+  width: 400px;
+  height: 400px;
+  background: linear-gradient(135deg, #22c55e, #14b8a6);
+  opacity: 0.12;
+  top: 50%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.blob-amber {
+  width: 350px;
+  height: 350px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  opacity: 0.08;
+  bottom: 10%;
+  left: 30%;
+  animation-delay: 4s;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  opacity: 0.015;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+@keyframes blob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25%       { transform: translate(20px, -30px) scale(1.1); }
+  50%       { transform: translate(-20px, 20px) scale(0.9); }
+  75%       { transform: translate(30px, 10px) scale(1.05); }
 }

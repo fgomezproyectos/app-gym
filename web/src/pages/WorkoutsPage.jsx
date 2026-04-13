@@ -1,6 +1,6 @@
 // WorkoutsPage.jsx — Ruta: /workouts (protegida)
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Plus, X } from 'lucide-react';
 import { RoutineBuilder } from '../components/RoutineBuilder';
 import { SavedRoutines } from '../components/SavedRoutines';
@@ -9,6 +9,7 @@ import './WorkoutsPage.css';
 import '../styles/general.css';
 
 export default function WorkoutsPage() {
+  const navigate = useNavigate();
   const [routines, setRoutines] = useState([]);
   const [completedDays, setCompletedDays] = useState([]);
   const [showBuilder, setShowBuilder] = useState(false);
@@ -34,6 +35,11 @@ export default function WorkoutsPage() {
     localStorage.setItem('gym-routines', JSON.stringify(updated));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/login');
+  };
+
   const handleMarkDone = (routineId) => {
     const today = new Date().toISOString().split('T')[0];
     const alreadyDone = completedDays.some(
@@ -51,6 +57,7 @@ export default function WorkoutsPage() {
       <div className="workouts-inner">
         <div className="workouts-header">
           <h1>Mis Rutinas</h1>
+          <button className="btn-logout" onClick={handleLogout}>Cerrar sesión</button>
         </div>
 
         <ProgressChart completedDays={completedDays} />
