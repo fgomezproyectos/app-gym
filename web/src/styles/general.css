@@ -2,7 +2,7 @@
   general.css — Estilos compartidos entre varias páginas.
   Importar en cualquier página que use estas clases.
 
-  .error         → LoginPage, RegisterPage, ExercisesPage
+  .error         → LoginPage, RegisterPage
   .auth-*        → LoginPage, RegisterPage
   .auth-link     → LoginPage, RegisterPage
 */

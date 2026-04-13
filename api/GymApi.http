@@ -1,4 +1,4 @@
-@GymApi_HostAddress = http://localhost:5211
+@GymApi_HostAddress = https://app-gym-hm59.onrender.com
 
 ### 1. Registrar usuario
 POST {{GymApi_HostAddress}}/api/auth/register
@@ -24,8 +24,7 @@ Content-Type: application/json
 ###
 
 ### --- Pega aquí el token recibido en el login ---
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJmcmFuQGd5bWFwcC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRnJhbiIsImV4cCI6MTc3NjU5MTUzNSwiaXNzIjoiR3ltQXBpIiwiYXVkIjoiR3ltQXBwIn0.bZNmhCZyk_BdimJ99t5PerppKFSPJ0ARDeJibqgUNGU
-
+@token =eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJmcmFuQGd5bWFwcC5jb20iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiRnJhbiIsImV4cCI6MTc3NjY3ODY2OSwiaXNzIjoiR3ltQXBpIiwiYXVkIjoiR3ltQXBwIn0.h5hD1IsWQqtDYuzG7UOZOvTs93xsaZqRXSmeJ_GDiVY
 ### 3. GET todos los ejercicios (requiere token)
 GET {{GymApi_HostAddress}}/api/exercises
 Accept: application/json

@@ -54,7 +54,13 @@ App-Gym/
 │   │   │   ├── LoginPage.jsx       ← /login
 │   │   │   ├── RegisterPage.jsx    ← /register
 │   │   │   ├── ExercisesPage.jsx   ← /exercises (protegida)
-│   │   │   └── ExercisesPage.css   ← Estilos exclusivos de exercises
+│   │   │   ├── ExercisesPage.css   ← Estilos exclusivos de exercises
+│   │   │   ├── WorkoutsPage.jsx    ← /workouts (protegida)
+│   │   │   └── WorkoutsPage.css    ← Estilos exclusivos de workouts
+│   │   ├── components/
+│   │   │   ├── RoutineBuilder.jsx  ← Formulario para crear rutinas
+│   │   │   ├── SavedRoutines.jsx   ← Lista de rutinas con "Marcar como hecha"
+│   │   │   └── ProgressChart.jsx   ← Heatmap 30 días + racha actual
 │   │   └── services/
 │   │       └── api.js              ← Llamadas a la API (login, register, getExercises)
 │   └── package.json
@@ -95,17 +101,29 @@ App-Gym/
 - Frontend React: login, registro, listado de ejercicios
 - Tema oscuro, diseño mobile-first
 - Estructura CSS por página con estilos compartidos en general.css
-- Primer commit y push a GitHub
-- Dockerfile multi-stage para el backend
-- docker-compose.yml (solo API, conecta a gym-postgres existente vía red gym-net)
-- Auto-migración en Program.cs al arrancar (`db.Database.Migrate()`)
+- Commit `93432ec` y push a GitHub (17 ficheros, 818 inserciones)
+- Página de rutinas `/workouts`: crear rutinas, marcar como hechas, heatmap de actividad 30 días
+  - Datos guardados en localStorage (pendiente conectar a API)
+  - Componentes: `RoutineBuilder`, `SavedRoutines`, `ProgressChart`
+  - Librería `lucide-react` instalada para iconos
+- BD en Neon creada: proyecto APP-GYM, región AWS Europe West 2 (Londres), Postgres 17
+  - Host: `ep-damp-hall-abhjjy3m.eu-west-2.aws.neon.tech`, DB: `neondb`, User: `neondb_owner`
+  - ⚠️ Rotar contraseña en panel Neon tras el despliegue
 
-### ⏳ Pendiente
-- Crear BD en Neon y obtener connection string
-- Desplegar backend en Render (conectar repo GitHub → Docker)
-- Conectar frontend en Vercel (conectar repo GitHub)
-- Desarrollar el frontend React (páginas, componentes, llamadas a la API)
-- Commit y push pendiente: Dockerfile + docker-compose + auto-migración
+### ⏳ Pendiente — PRÓXIMO PASO: desplegar en Render
+- **Render (backend):** New Web Service → conectar repo `fgomezproyectos/App-GYM` → Docker → Free
+  - Variables de entorno a configurar:
+    - `ConnectionStrings__Default` = `Host=ep-damp-hall-abhjjy3m.eu-west-2.aws.neon.tech;Database=neondb;Username=neondb_owner;Password=<PASSWORD>;SSL Mode=Require;Trust Server Certificate=true`
+    - `Jwt__Key` = clave segura (mín. 32 chars)
+    - `Jwt__Issuer` = `GymApi`
+    - `Jwt__Audience` = `GymApp`
+    - `AllowedOrigins__0` = URL de Vercel (añadir tras el despliegue del frontend)
+  - Una vez creado, anotar la URL pública (ej: `https://gymapi.onrender.com`)
+- **Vercel (frontend):** New Project → repo `fgomezproyectos/App-GYM` → Root Directory: `web`
+  - Variable de entorno: `VITE_API_URL` = URL de Render
+  - Tras desplegar, añadir URL de Vercel a `AllowedOrigins__0` en Render
+- CRUD ejercicios desde la UI (crear/editar/borrar)
+- Workouts: controladores + frontend
 
 ## Decisiones tomadas
 

@@ -1,9 +1,8 @@
 /*
   api.js — Servicio centralizado de llamadas a la API.
   Funciones exportadas y dónde se usan:
-    login()        → LoginPage
-    register()     → RegisterPage
-    getExercises() → ExercisesPage
+    login()    → LoginPage
+    register() → RegisterPage
 */
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5211';
 
@@ -43,6 +42,4 @@ export function register(name, email, password) {
   });
 }
 
-export function getExercises() {
-  return request('/api/exercises');
-}
+

@@ -17,7 +17,7 @@ export default function LoginPage() {
     try {
       const data = await login(email, password);
       localStorage.setItem('token', data.token);
-      navigate('/exercises');
+      navigate('/workouts');
     } catch (err) {
       setError('Email o contraseña incorrectos');
     } finally {
