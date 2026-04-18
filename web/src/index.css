@@ -5,15 +5,15 @@
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  color: #eaeaea;
-  background: #0d0e14;
+  color: #1b1f3a;
+  background: #f4f6f9;
 }
 
-body { margin: 0; }
+body { margin: 0; background: #f4f6f9; }
 #root { min-height: 100svh; }
 
 h1, h2, h3 { margin: 0; font-weight: 600; }
 p { margin: 0; }
 a { color: inherit; }
-button { font-family: inherit; cursor: pointer; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
 input { font-family: inherit; }

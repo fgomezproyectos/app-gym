@@ -1,0 +1,416 @@
+/* DashboardPage.css — Estilos exclusivos de la página /dashboard */
+
+/* ── Layout ── */
+.dashboard-page {
+  min-height: 100svh;
+  background: #f4f6f9;
+  padding-bottom: 6rem; /* espacio sobre la BottomNav */
+}
+
+.dashboard-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 1rem;
+}
+
+/* ── Header ── */
+.dash-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.dash-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #1b1f3a;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.dash-greeting {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  line-height: 1.25;
+}
+
+.dash-hello {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.dash-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1b1f3a;
+}
+
+.dash-menu-btn {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b1f3a;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dash-menu-btn:hover {
+  background: #f3f4f6;
+}
+
+/* ── Título ── */
+.dash-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1b1f3a;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  margin-bottom: 1.5rem;
+}
+
+/* ── Stats rápidas ── */
+.dash-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.65rem;
+  margin-bottom: 1rem;
+}
+
+.dash-stat-card {
+  border-radius: 18px;
+  padding: 0.9rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* Colores de tarjetas stat */
+.stat-days    { background: #daeef8; }
+.stat-streak  { background: #ebe6fb; }
+.stat-goals   { background: #d9f5e1; }
+
+.dash-stat-value {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #1b1f3a;
+  line-height: 1;
+}
+
+.dash-stat-label {
+  font-size: 0.65rem;
+  color: #6b7280;
+  line-height: 1.3;
+}
+
+/* ── Secciones blancas ── */
+.dash-section {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.dash-section-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1b1f3a;
+  margin-bottom: 1rem;
+}
+
+.dash-section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+/* ── Esta semana ── */
+.week-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+}
+
+.week-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.week-day-label {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.week-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  border: 1.5px solid #e5e7eb;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.week-cell.done .week-dot {
+  background: #1b1f3a;
+  border-color: #1b1f3a;
+}
+
+.week-cell.is-today .week-day-label {
+  color: #1b1f3a;
+  font-weight: 700;
+}
+
+.week-cell.is-today:not(.done) .week-dot {
+  border-color: #1b1f3a;
+}
+
+/* ── Daily Goals ── */
+.btn-icon-round {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b1f3a;
+  transition: background 0.2s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-icon-round:hover {
+  background: #e5e7eb;
+}
+
+.goals-progress-wrap {
+  margin-bottom: 1rem;
+}
+
+.goals-progress-bar-track {
+  height: 6px;
+  background: #f3f4f6;
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 0.4rem;
+}
+
+.goals-progress-bar-fill {
+  height: 100%;
+  background: #1b1f3a;
+  border-radius: 999px;
+  transition: width 0.4s ease;
+}
+
+.goals-progress-label {
+  font-size: 0.72rem;
+  color: #6b7280;
+}
+
+.add-goal-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.add-goal-input {
+  flex: 1;
+  padding: 0.6rem 0.9rem;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  color: #1b1f3a;
+  background: #f9fafb;
+  outline: none;
+  font-family: inherit;
+  -webkit-appearance: none;
+}
+
+.add-goal-input:focus {
+  border-color: #1b1f3a;
+}
+
+.btn-confirm-goal {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #1b1f3a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-confirm-goal:hover {
+  opacity: 0.85;
+}
+
+.goals-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.goals-empty {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  text-align: center;
+  padding: 0.75rem 0;
+}
+
+.goals-setup-hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.2rem;
+  margin-bottom: 0;
+  line-height: 1.4;
+}
+
+.goal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.goal-item:last-child {
+  border-bottom: none;
+}
+
+.goal-checkbox {
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #d1d5db;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  transition: background 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.goal-checkbox.checked {
+  background: #1b1f3a;
+  border-color: #1b1f3a;
+}
+
+.goal-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #1b1f3a;
+  transition: color 0.2s;
+}
+
+.goal-item.done .goal-label {
+  text-decoration: line-through;
+  color: #9ca3af;
+}
+
+.goal-remove {
+  min-width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d1d5db;
+  transition: color 0.2s;
+  flex-shrink: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.goal-remove:hover {
+  color: #ef4444;
+}
+
+/* ── Breakpoints ── */
+@media (min-width: 600px) {
+  .dashboard-inner {
+    padding: 2rem 1.5rem;
+  }
+
+  .dash-title {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .dashboard-inner {
+    padding: 2.5rem 2rem;
+  }
+}
+
+/* ═══════════════════════════════════════
+   DARK MODE — data-theme="dark" en <html>
+   ═══════════════════════════════════════ */
+
+[data-theme="dark"] .dashboard-page { background: #0d0e14; }
+
+[data-theme="dark"] .dash-avatar   { background: #4f8ef7; }
+[data-theme="dark"] .dash-hello    { color: #5a5f7a; }
+[data-theme="dark"] .dash-name     { color: #eaeaea; }
+[data-theme="dark"] .dash-menu-btn { background: #1a1b23; border-color: #2e3044; color: #eaeaea; box-shadow: none; }
+[data-theme="dark"] .dash-menu-btn:hover { background: #252634; }
+[data-theme="dark"] .dash-title    { color: #eaeaea; }
+
+[data-theme="dark"] .stat-days   { background: rgba(79,  142, 247, 0.14); }
+[data-theme="dark"] .stat-streak { background: rgba(99,  102, 241, 0.14); }
+[data-theme="dark"] .stat-goals  { background: rgba(34,  197,  94, 0.14); }
+[data-theme="dark"] .dash-stat-value { color: #eaeaea; }
+[data-theme="dark"] .dash-stat-label { color: #8b8fa8; }
+
+[data-theme="dark"] .dash-section       { background: #1a1b23; box-shadow: none; }
+[data-theme="dark"] .dash-section-title { color: #eaeaea; }
+
+[data-theme="dark"] .week-day-label                      { color: #5a5f7a; }
+[data-theme="dark"] .week-dot                            { background: #2e3044; border-color: #3a3d56; }
+[data-theme="dark"] .week-cell.done .week-dot            { background: #4f8ef7; border-color: #4f8ef7; }
+[data-theme="dark"] .week-cell.is-today .week-day-label  { color: #eaeaea; }
+[data-theme="dark"] .week-cell.is-today:not(.done) .week-dot { border-color: #4f8ef7; }
+
+[data-theme="dark"] .btn-icon-round { background: #2e3044; color: #eaeaea; }
+[data-theme="dark"] .btn-icon-round:hover { background: #3a3d56; }
+
+[data-theme="dark"] .goals-progress-bar-track { background: #2e3044; }
+[data-theme="dark"] .goals-progress-bar-fill  { background: #4f8ef7; }
+[data-theme="dark"] .goals-progress-label     { color: #8b8fa8; }
+
+[data-theme="dark"] .add-goal-input       { background: #2e3044; border-color: #3a3d56; color: #eaeaea; }
+[data-theme="dark"] .add-goal-input:focus { border-color: #4f8ef7; }
+[data-theme="dark"] .btn-confirm-goal     { background: #4f8ef7; }
+
+[data-theme="dark"] .goal-item                  { border-color: #252634; }
+[data-theme="dark"] .goal-label                 { color: #eaeaea; }
+[data-theme="dark"] .goal-item.done .goal-label { color: #5a5f7a; }
+[data-theme="dark"] .goal-checkbox              { border-color: #3a3d56; }
+[data-theme="dark"] .goal-checkbox.checked      { background: #4f8ef7; border-color: #4f8ef7; }
+[data-theme="dark"] .goal-remove:hover          { color: #f87171; }
+
+[data-theme="dark"] .goals-setup-hint { color: #5a5f7a; }

@@ -1,0 +1,106 @@
+/* ProfilePage.css — Estilos exclusivos de la página /profile */
+
+.profile-page {
+  min-height: 100svh;
+  background: #f4f6f9;
+  padding-bottom: 6rem;
+}
+
+.profile-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+
+.profile-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.profile-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #1b1f3a;
+  letter-spacing: -0.02em;
+}
+
+.profile-placeholder-card {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3rem 1.5rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1rem;
+}
+
+.profile-avatar-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.profile-coming-soon {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1b1f3a;
+  margin-bottom: 0.5rem;
+}
+
+.profile-coming-sub {
+  font-size: 0.85rem;
+  color: #6b7280;
+  max-width: 260px;
+  line-height: 1.5;
+}
+
+.btn-logout-profile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1.5px solid #e5e7eb;
+  color: #ef4444;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-logout-profile:hover {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+@media (min-width: 600px) {
+  .profile-inner {
+    padding: 2rem 1.5rem;
+  }
+}
+
+/* ═══════════════════════════════════════
+   DARK MODE
+   ═══════════════════════════════════════ */
+
+[data-theme="dark"] .profile-page               { background: #0d0e14; }
+[data-theme="dark"] .profile-title              { color: #eaeaea; }
+[data-theme="dark"] .profile-placeholder-card   { background: #1a1b23; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+[data-theme="dark"] .profile-avatar-circle      { background: #2e3044; color: #8b8fa8; }
+[data-theme="dark"] .profile-coming-soon        { color: #eaeaea; }
+[data-theme="dark"] .profile-coming-sub         { color: #8b8fa8; }
+[data-theme="dark"] .btn-logout-profile         { background: #1a1b23; border-color: #2e3044; color: #f87171; }
+[data-theme="dark"] .btn-logout-profile:hover   { background: rgba(239,68,68,0.1); border-color: #f87171; }

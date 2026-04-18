@@ -5,7 +5,33 @@
   .error            → LoginPage, RegisterPage
   .auth-*           → LoginPage, RegisterPage
   .animated-bg / .blob / .bg-grid → AnimatedBackground (LoginPage, RegisterPage)
+  .btn-menu-trigger → WorkoutsPage, ProfilePage
 */
+
+/* === Botón hamburguesa (abre Sidebar) === */
+/* Compartido por: WorkoutsPage, ProfilePage */
+.btn-menu-trigger {
+  min-width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1b1f3a;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  transition: background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-menu-trigger:hover {
+  background: #f9fafb;
+}
+
+[data-theme="dark"] .btn-menu-trigger       { background: #1a1b23; border-color: #2e3044; color: #eaeaea; box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+[data-theme="dark"] .btn-menu-trigger:hover { background: #252634; }
 
 /* === Error === */
 .error {
