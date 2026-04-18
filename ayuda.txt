@@ -227,6 +227,4 @@ Decisiones tomadas
 - VS Code en lugar de Visual Studio: más ligero, mejor integración con terminal y Docker.
 - Secrets siempre fuera del repo (nunca en appsettings.json de producción).
 
-
-
-hola fran!
+HOLAAAAAA
