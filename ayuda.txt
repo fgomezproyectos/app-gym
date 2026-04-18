@@ -226,5 +226,3 @@ Decisiones tomadas
 - Mono-repo: todo en App-Gym, más simple de gestionar para un proyecto de este tamaño.
 - VS Code en lugar de Visual Studio: más ligero, mejor integración con terminal y Docker.
 - Secrets siempre fuera del repo (nunca en appsettings.json de producción).
-
-HOLAAAAAA
