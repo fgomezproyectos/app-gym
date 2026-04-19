@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, ChevronRight, BookOpen, Calendar, Grid3x3 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, BookOpen, Calendar, Grid3x3, Menu } from 'lucide-react';
 import { getDailyGoalsByDateRange } from '../services/api';
+import { useSidebar } from '../components/ProtectedLayout';
 import './GoalJournalPage.css';
+import '../styles/general.css';
 
 const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const DAYS_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
@@ -16,6 +18,7 @@ function toLocalDateString(date) {
 }
 
 export default function GoalJournalPage() {
+  const openSidebar = useSidebar();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyGoals, setDailyGoals] = useState([]);
   const [weeklyData, setWeeklyData] = useState({});
@@ -109,9 +112,7 @@ export default function GoalJournalPage() {
   const handleNextDay = () => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 1);
-    if (newDate <= new Date()) {
-      setSelectedDate(newDate);
-    }
+    setSelectedDate(newDate);
   };
 
   const handlePreviousWeek = () => {
@@ -123,9 +124,7 @@ export default function GoalJournalPage() {
   const handleNextWeek = () => {
     const newDate = new Date(selectedDate);
     newDate.setDate(newDate.getDate() + 7);
-    if (newDate <= new Date()) {
-      setSelectedDate(newDate);
-    }
+    setSelectedDate(newDate);
   };
 
   const handlePreviousMonth = () => {
@@ -137,9 +136,7 @@ export default function GoalJournalPage() {
   const handleNextMonth = () => {
     const newDate = new Date(selectedDate);
     newDate.setMonth(newDate.getMonth() + 1);
-    if (newDate <= new Date()) {
-      setSelectedDate(newDate);
-    }
+    setSelectedDate(newDate);
   };
 
   const isToday =
@@ -207,7 +204,9 @@ export default function GoalJournalPage() {
           <BookOpen size={24} />
           <h1>Diario de Goals</h1>
         </div>
-        <p className="goal-journal-subtitle">Historial de tus objetivos completados</p>
+        <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
+          <Menu size={22} />
+        </button>
       </div>
 
       {error && <div className="goal-journal-error">{error}</div>}
@@ -255,13 +254,11 @@ export default function GoalJournalPage() {
             <div className="goal-journal-date-display">
               <h2>{formatDate(selectedDate)}</h2>
               {isToday && <span className="goal-journal-today-badge">Hoy</span>}
-              {isFuture && <span className="goal-journal-future-badge">Futuro</span>}
             </div>
 
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextDay}
-              disabled={isFuture}
               title="Día siguiente"
             >
               <ChevronRight size={20} />
@@ -378,7 +375,12 @@ export default function GoalJournalPage() {
                 <div 
                   key={dateStr} 
                   className={`weekly-day-cell ${isCurrentDay ? 'is-today' : ''} ${isCompleted ? 'border-complete' : ''} ${hasIncomplete ? 'border-incomplete' : ''}`}
-                  onClick={() => !isFuture && setSelectedDate(day)}
+                  onClick={() => {
+                    if (!isFuture) {
+                      setSelectedDate(day);
+                      setViewMode('detail');
+                    }
+                  }}
                   style={{ cursor: !isFuture ? 'pointer' : 'default' }}
                 >
                   <div className="weekly-day-label">{DAYS_SHORT[idx]}</div>
@@ -451,7 +453,12 @@ export default function GoalJournalPage() {
                   <div
                     key={idx}
                     className={`calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isCurrentDay ? 'is-today' : ''} ${isCompleted ? 'border-complete' : ''} ${hasIncomplete ? 'border-incomplete' : ''}`}
-                    onClick={() => isCurrentMonth && !isFuture && setSelectedDate(day)}
+                    onClick={() => {
+                      if (isCurrentMonth && !isFuture) {
+                        setSelectedDate(day);
+                        setViewMode('detail');
+                      }
+                    }}
                     style={{ cursor: isCurrentMonth && !isFuture ? 'pointer' : 'default' }}
                   >
                     <div className="calendar-day-number">{day.getDate()}</div>

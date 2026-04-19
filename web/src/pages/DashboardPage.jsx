@@ -169,11 +169,11 @@ export default function DashboardPage() {
         <div className="dash-stats">
           <div className="dash-stat-card stat-days">
             <span className="dash-stat-value">{daysThisWeek}</span>
-            <span className="dash-stat-label">Días esta semana</span>
+            <span className="dash-stat-label">Entrenos esta semana</span>
           </div>
           <div className="dash-stat-card stat-streak">
             <span className="dash-stat-value">{streak}</span>
-            <span className="dash-stat-label">Racha (días)</span>
+            <span className="dash-stat-label">Racha (goals)</span>
           </div>
           <div className="dash-stat-card stat-goals">
             <span className="dash-stat-value">

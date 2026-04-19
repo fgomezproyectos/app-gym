@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Target, Check } from 'lucide-react';
+import { Plus, Trash2, Target, Check, Menu } from 'lucide-react';
 import { getGoals, createGoal, deleteGoal, getDailyGoals, markDailyGoal } from '../services/api';
+import { useSidebar } from '../components/ProtectedLayout';
 import './GoalsPage.css';
+import '../styles/general.css';
 
 export default function GoalsPage() {
+  const openSidebar = useSidebar();
   const [goals, setGoals] = useState([]);
   const [dailyGoals, setDailyGoals] = useState([]);
   const [newLabel, setNewLabel] = useState('');
@@ -77,7 +80,9 @@ export default function GoalsPage() {
           <Target size={24} />
           <h1>Gestión de Goals</h1>
         </div>
-        <p className="goals-subtitle">Crea y gestiona tus objetivos diarios</p>
+        <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
+          <Menu size={22} />
+        </button>
       </div>
 
       {error && <div className="goals-error">{error}</div>}

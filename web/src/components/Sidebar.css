@@ -46,6 +46,32 @@
   flex-shrink: 0;
 }
 
+.sidebar-header-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #f3f4f6;
+  flex-shrink: 0;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-header-btn:hover {
+  background-color: #f9fafb;
+}
+
+[data-theme="dark"] .sidebar-header-btn {
+  border-bottom-color: #2e3044;
+}
+
+[data-theme="dark"] .sidebar-header-btn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
 .sidebar-user-info {
   display: flex;
   align-items: center;
@@ -85,6 +111,7 @@
   font-size: 0.9rem;
   font-weight: 600;
   color: #1b1f3a;
+  text-align: left;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -154,10 +181,7 @@
 
 /* ── Separador ── */
 .sidebar-divider {
-  height: 1px;
-  background: #f3f4f6;
-  margin: 0.25rem 1rem;
-  flex-shrink: 0;
+  display: none;
 }
 
 /* ── Sección Goals ── */
@@ -366,6 +390,8 @@
 [data-theme="dark"] .sidebar-panel              { background: #1a1b23; box-shadow: 4px 0 24px rgba(0,0,0,0.4); }
 [data-theme="dark"] .sidebar-overlay.visible    { background: rgba(0,0,0,0.6); }
 [data-theme="dark"] .sidebar-header             { border-color: #2e3044; }
+[data-theme="dark"] .sidebar-header-btn         { border-bottom-color: #2e3044; }
+[data-theme="dark"] .sidebar-header-btn:hover   { background-color: rgba(255, 255, 255, 0.05); }
 [data-theme="dark"] .sidebar-avatar             { background: #4f8ef7; }
 [data-theme="dark"] .sidebar-username           { color: #eaeaea; }
 [data-theme="dark"] .sidebar-email              { color: #5a5f7a; }
@@ -374,7 +400,7 @@
 [data-theme="dark"] .sidebar-nav-item           { color: #8b8fa8; }
 [data-theme="dark"] .sidebar-nav-item:hover     { background: #252634; color: #eaeaea; }
 [data-theme="dark"] .sidebar-nav-item.active    { background: #252634; color: #eaeaea; }
-[data-theme="dark"] .sidebar-divider            { background: #2e3044; }
+[data-theme="dark"] .sidebar-divider            { display: none; }
 [data-theme="dark"] .sidebar-section-title      { color: #eaeaea; }
 [data-theme="dark"] .sidebar-section-hint       { color: #5a5f7a; }
 [data-theme="dark"] .sidebar-goals-empty        { color: #5a5f7a; }

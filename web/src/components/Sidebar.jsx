@@ -1,9 +1,8 @@
-// Sidebar.jsx — Barra lateral izquierda. Gestiona los goals predeterminados via API.
-// Cuando los goals cambian, dispara el evento 'defaultGoalsChanged' para que DashboardPage se actualice.
-import { useState, useEffect } from 'react';
+// Sidebar.jsx — Barra lateral izquierda
+import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Dumbbell, User, X, Plus, Trash2, Target, LogOut, Moon, Sun, BookOpen } from 'lucide-react';
-import { getMe, getGoals, createGoal, deleteGoal } from '../services/api';
+import { Home, Dumbbell, X, LogOut, Moon, Sun, BookOpen, Target } from 'lucide-react';
+import { getMe } from '../services/api';
 import './Sidebar.css';
 
 function getUserName() {
@@ -46,10 +45,6 @@ export function Sidebar({ isOpen, onClose }) {
   const email = getEmail();
   const initial = name.charAt(0).toUpperCase();
   const [avatar, setAvatar] = useState(null);
-
-  const [defaultGoals, setDefaultGoals] = useState([]);
-  const [newLabel, setNewLabel] = useState('');
-  const [showAdd, setShowAdd] = useState(false);
   const [isDark, setIsDark] = useState(
     () => document.documentElement.dataset.theme === 'dark'
   );
@@ -66,11 +61,6 @@ export function Sidebar({ isOpen, onClose }) {
     }
   };
 
-  // Recargar goals cada vez que el sidebar se abre
-  useEffect(() => {
-    if (isOpen) getGoals().then(setDefaultGoals).catch(() => {});
-  }, [isOpen]);
-
   // Cargar avatar (solo una vez) y escuchar cambios
   useEffect(() => {
     getMe().then(data => { if (data?.avatarBase64) setAvatar(data.avatarBase64); }).catch(() => {});
@@ -83,27 +73,6 @@ export function Sidebar({ isOpen, onClose }) {
       window.removeEventListener('nameChanged', onName);
     };
   }, []);
-
-  const addDefaultGoal = async () => {
-    if (!newLabel.trim()) return;
-    try {
-      const created = await createGoal(newLabel.trim());
-      setDefaultGoals(prev => [...prev, created]);
-      setNewLabel('');
-      setShowAdd(false);
-      window.dispatchEvent(new CustomEvent('defaultGoalsChanged'));
-    } catch { /* ignorar */ }
-  };
-
-  const removeDefaultGoal = async (id) => {
-    setDefaultGoals(prev => prev.filter(g => g.id !== id));
-    try {
-      await deleteGoal(id);
-      window.dispatchEvent(new CustomEvent('defaultGoalsChanged'));
-    } catch {
-      getGoals().then(setDefaultGoals).catch(() => {});
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -124,7 +93,11 @@ export function Sidebar({ isOpen, onClose }) {
       <aside className={`sidebar-panel${isOpen ? ' open' : ''}`} aria-label="Menú lateral">
 
         {/* Header: usuario */}
-        <div className="sidebar-header">
+        <button 
+          className="sidebar-header sidebar-header-btn"
+          onClick={() => { navigate('/profile'); onClose(); }}
+          aria-label="Ir al perfil"
+        >
           <div className="sidebar-user-info">
             <div className="sidebar-avatar">
               {avatar
@@ -137,10 +110,14 @@ export function Sidebar({ isOpen, onClose }) {
               {email && <span className="sidebar-email">{email}</span>}
             </div>
           </div>
-          <button className="sidebar-close" onClick={onClose} aria-label="Cerrar menú">
+          <button 
+            className="sidebar-close" 
+            onClick={(e) => { e.stopPropagation(); onClose(); }}
+            aria-label="Cerrar menú"
+          >
             <X size={18} />
           </button>
-        </div>
+        </button>
 
         {/* Navegación */}
         <nav className="sidebar-nav">
@@ -176,79 +153,9 @@ export function Sidebar({ isOpen, onClose }) {
             <BookOpen size={18} />
             Diario de Goals
           </NavLink>
-          <NavLink
-            to="/profile"
-            className={({ isActive }) => `sidebar-nav-item${isActive ? ' active' : ''}`}
-            onClick={onClose}
-          >
-            <User size={18} />
-            Perfil
-          </NavLink>
         </nav>
 
         <div className="sidebar-divider" />
-
-        {/* Goals predeterminados */}
-        <div className="sidebar-section">
-          <div className="sidebar-section-header">
-            <div className="sidebar-section-title">
-              <Target size={15} />
-              Goals predeterminados
-            </div>
-            <button
-              className="sidebar-btn-icon"
-              onClick={() => setShowAdd(v => !v)}
-              aria-label="Añadir goal predeterminado"
-            >
-              <Plus size={16} />
-            </button>
-          </div>
-
-          <p className="sidebar-section-hint">
-            Estos goals aparecen automáticamente cada día en tu dashboard.
-          </p>
-
-          {showAdd && (
-            <div className="sidebar-add-row">
-              <input
-                type="text"
-                placeholder="Nuevo goal diario..."
-                value={newLabel}
-                onChange={e => setNewLabel(e.target.value)}
-                className="sidebar-add-input"
-                onKeyDown={e => e.key === 'Enter' && addDefaultGoal()}
-                autoFocus
-              />
-              <button
-                className="sidebar-btn-confirm"
-                onClick={addDefaultGoal}
-                aria-label="Confirmar"
-              >
-                <Plus size={14} />
-              </button>
-            </div>
-          )}
-
-          <div className="sidebar-goals-list">
-            {defaultGoals.length === 0 && !showAdd && (
-              <p className="sidebar-goals-empty">
-                Sin goals predeterminados aún.
-              </p>
-            )}
-            {defaultGoals.map(g => (
-              <div key={g.id} className="sidebar-goal-item">
-                <span className="sidebar-goal-label">{g.label}</span>
-                <button
-                  className="sidebar-goal-remove"
-                  onClick={() => removeDefaultGoal(g.id)}
-                  aria-label="Eliminar goal"
-                >
-                  <Trash2 size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Footer: modo oscuro + cerrar sesión */}
         <div className="sidebar-footer">
