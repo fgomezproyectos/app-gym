@@ -212,14 +212,14 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
 }
 
 .goal-journal-completed {
-  display: block;
+  display: inline;
   font-size: 2rem;
   font-weight: 700;
   color: var(--journal-accent);
 }
 
 .goal-journal-total {
-  display: block;
+  display: inline;
   font-size: 1rem;
   color: var(--journal-text-secondary);
 }

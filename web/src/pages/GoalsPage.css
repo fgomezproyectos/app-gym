@@ -334,14 +334,14 @@
 }
 
 .goals-progress-number {
-  display: block;
+  display: inline;
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--goals-accent);
 }
 
 .goals-progress-total {
-  display: block;
+  display: inline;
   font-size: 0.9rem;
   color: var(--goals-text-secondary);
 }
