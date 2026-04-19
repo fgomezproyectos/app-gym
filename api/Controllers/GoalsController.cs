@@ -9,7 +9,7 @@ using System.Security.Claims;
 namespace GymApi.Controllers;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/goals")]
 [Authorize]
 public class GoalsController : ControllerBase
 {
@@ -63,6 +63,14 @@ public class GoalsController : ControllerBase
             .FirstOrDefaultAsync(g => g.Id == id && g.UserId == UserId);
 
         if (goal is null) return NotFound();
+
+        // Eliminar el daily log de HOY (si existe) para que desaparezca del dashboard.
+        // Los logs de días anteriores se desvinculan (GoalId → null) conservando el historial.
+        var today = DateOnly.FromDateTime(DateTime.UtcNow);
+        var todayLog = await _context.DailyGoalLogs
+            .FirstOrDefaultAsync(d => d.GoalId == id && d.UserId == UserId && d.Date == today);
+        if (todayLog is not null)
+            _context.DailyGoalLogs.Remove(todayLog);
 
         _context.Goals.Remove(goal);
         await _context.SaveChangesAsync();
