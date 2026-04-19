@@ -189,7 +189,7 @@ public class DailyGoalsController : ControllerBase
             d.Id,
             d.GoalId,
             d.Label,
-            d.Date,
+            date = d.Date.ToString("yyyy-MM-dd"),
             d.Done,
             d.IsDefault
         });
