@@ -371,6 +371,14 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
   background-color: var(--journal-success-bg);
 }
 
+.weekly-day-cell.border-complete {
+  border: 2px solid rgba(34, 197, 94, 0.4);
+}
+
+.weekly-day-cell.border-incomplete {
+  border: 2px solid rgba(239, 68, 68, 0.3);
+}
+
 .weekly-day-label {
   font-size: 0.75rem;
   font-weight: 600;
@@ -468,6 +476,7 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
   opacity: 0.3;
   background-color: transparent;
   border-color: transparent;
+  cursor: default;
 }
 
 .calendar-day.is-today {
@@ -476,9 +485,12 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
   font-weight: 600;
 }
 
-.calendar-day.completed {
-  background-color: var(--journal-success-bg);
-  border-color: var(--journal-accent);
+.calendar-day.border-complete {
+  border: 2px solid rgba(34, 197, 94, 0.4);
+}
+
+.calendar-day.border-incomplete {
+  border: 2px solid rgba(239, 68, 68, 0.3);
 }
 
 .calendar-day-number {
@@ -491,17 +503,10 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
   justify-content: center;
 }
 
-.calendar-checkmark {
-  font-size: 0.9rem;
+.calendar-percentage {
+  font-size: 0.7rem;
   color: var(--journal-accent);
-  font-weight: 700;
-}
-
-.calendar-dot {
-  width: 4px;
-  height: 4px;
-  background-color: var(--journal-accent);
-  border-radius: 50%;
+  font-weight: 600;
 }
 
 @media (max-width: 600px) {

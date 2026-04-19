@@ -7,6 +7,14 @@ const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 const DAYS_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
 const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
+// Formatea una fecha a "YYYY-MM-DD" en zona horaria local (sin conversión a UTC)
+function toLocalDateString(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export default function GoalJournalPage() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyGoals, setDailyGoals] = useState([]);
@@ -26,7 +34,7 @@ export default function GoalJournalPage() {
   const loadDailyGoals = async () => {
     try {
       setLoading(true);
-      const dateStr = selectedDate.toISOString().split('T')[0];
+      const dateStr = toLocalDateString(selectedDate);
       const data = await getDailyGoalsByDateRange(dateStr, dateStr);
       setDailyGoals(data || []);
       setError('');
@@ -46,10 +54,10 @@ export default function GoalJournalPage() {
       const monday = new Date(today);
       monday.setDate(today.getDate() + mondayOffset);
       
-      const startStr = monday.toISOString().split('T')[0];
+      const startStr = toLocalDateString(monday);
       const endDate = new Date(monday);
       endDate.setDate(endDate.getDate() + 6);
-      const endStr = endDate.toISOString().split('T')[0];
+      const endStr = toLocalDateString(endDate);
       
       const data = await getDailyGoalsByDateRange(startStr, endStr);
       
@@ -74,8 +82,8 @@ export default function GoalJournalPage() {
       const startDate = new Date(year, month, 1);
       const endDate = new Date(year, month + 1, 0);
       
-      const startStr = startDate.toISOString().split('T')[0];
-      const endStr = endDate.toISOString().split('T')[0];
+      const startStr = toLocalDateString(startDate);
+      const endStr = toLocalDateString(endDate);
       
       const data = await getDailyGoalsByDateRange(startStr, endStr);
       
@@ -342,13 +350,12 @@ export default function GoalJournalPage() {
             </button>
 
             <div className="goal-journal-date-display">
-              <h2>Semana del {formatDate(getWeekDays()[0]).split(',')[0]}</h2>
+              <h2>Semana del {getWeekDays()[0].getDate()} al {getWeekDays()[6].getDate()}</h2>
             </div>
 
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextWeek}
-              disabled={getWeekDays()[6] > new Date()}
               title="Próxima semana"
             >
               <ChevronRight size={20} />
@@ -357,15 +364,23 @@ export default function GoalJournalPage() {
 
           <div className="goal-journal-weekly-grid">
             {getWeekDays().map((day, idx) => {
-              const dateStr = day.toISOString().split('T')[0];
+              const dateStr = toLocalDateString(day);
               const dayGoals = weeklyData[dateStr] || [];
               const completed = dayGoals.filter(g => g.done).length;
               const total = dayGoals.length;
               const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
               const isCurrentDay = day.toDateString() === new Date().toDateString();
+              const isFuture = day > new Date();
+              const isCompleted = total > 0 && completed === total;
+              const hasIncomplete = total > 0 && completed < total;
 
               return (
-                <div key={dateStr} className={`weekly-day-cell ${isCurrentDay ? 'is-today' : ''}`}>
+                <div 
+                  key={dateStr} 
+                  className={`weekly-day-cell ${isCurrentDay ? 'is-today' : ''} ${isCompleted ? 'border-complete' : ''} ${hasIncomplete ? 'border-incomplete' : ''}`}
+                  onClick={() => !isFuture && setSelectedDate(day)}
+                  style={{ cursor: !isFuture ? 'pointer' : 'default' }}
+                >
                   <div className="weekly-day-label">{DAYS_SHORT[idx]}</div>
                   <div className="weekly-day-number">{day.getDate()}</div>
                   <div className="weekly-day-indicator">
@@ -406,7 +421,6 @@ export default function GoalJournalPage() {
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextMonth}
-              disabled={new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 1) > new Date()}
               title="Próximo mes"
             >
               <ChevronRight size={20} />
@@ -421,28 +435,29 @@ export default function GoalJournalPage() {
             </div>
             <div className="calendar-grid">
               {getMonthDays().map((day, idx) => {
-                const dateStr = day.toISOString().split('T')[0];
+                const dateStr = toLocalDateString(day);
                 const dayGoals = monthlyData[dateStr] || [];
                 const completed = dayGoals.filter(g => g.done).length;
                 const total = dayGoals.length;
                 const isCurrentMonth = day.getMonth() === selectedDate.getMonth();
                 const isCurrentDay = day.toDateString() === new Date().toDateString();
+                const isFuture = day > new Date();
                 const hasData = total > 0;
+                const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
                 const isCompleted = hasData && completed === total;
+                const hasIncomplete = hasData && completed < total;
 
                 return (
                   <div
                     key={idx}
-                    className={`calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isCurrentDay ? 'is-today' : ''} ${isCompleted ? 'completed' : ''}`}
+                    className={`calendar-day ${!isCurrentMonth ? 'other-month' : ''} ${isCurrentDay ? 'is-today' : ''} ${isCompleted ? 'border-complete' : ''} ${hasIncomplete ? 'border-incomplete' : ''}`}
+                    onClick={() => isCurrentMonth && !isFuture && setSelectedDate(day)}
+                    style={{ cursor: isCurrentMonth && !isFuture ? 'pointer' : 'default' }}
                   >
                     <div className="calendar-day-number">{day.getDate()}</div>
                     {hasData && (
                       <div className="calendar-day-indicator">
-                        {isCompleted ? (
-                          <span className="calendar-checkmark">✓</span>
-                        ) : (
-                          <span className="calendar-dot" />
-                        )}
+                        <span className="calendar-percentage">{percentage}%</span>
                       </div>
                     )}
                   </div>
