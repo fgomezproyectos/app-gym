@@ -37,30 +37,34 @@ public class DailyGoalsController : ControllerBase
             .Where(d => d.UserId == UserId && d.Date == day)
             .ToListAsync();
 
-        // Auto-generación desde defaults si no hay nada para ese día
-        if (existing.Count == 0)
-        {
-            var defaults = await _context.Goals
-                .Where(g => g.UserId == UserId)
-                .OrderBy(g => g.CreatedAt)
-                .ToListAsync();
+        // Sincronizar siempre con los defaults: añadir los que falten para hoy
+        var allDefaults = await _context.Goals
+            .Where(g => g.UserId == UserId)
+            .OrderBy(g => g.CreatedAt)
+            .ToListAsync();
 
-            if (defaults.Count > 0)
+        var existingGoalIds = existing
+            .Where(e => e.GoalId.HasValue)
+            .Select(e => e.GoalId!.Value)
+            .ToHashSet();
+
+        var missing = allDefaults
+            .Where(g => !existingGoalIds.Contains(g.Id))
+            .Select(g => new DailyGoalLog
             {
-                var logs = defaults.Select(g => new DailyGoalLog
-                {
-                    UserId = UserId,
-                    GoalId = g.Id,
-                    Label = g.Label,
-                    Date = day,
-                    Done = false,
-                    IsDefault = true
-                }).ToList();
+                UserId = UserId,
+                GoalId = g.Id,
+                Label = g.Label,
+                Date = day,
+                Done = false,
+                IsDefault = true
+            }).ToList();
 
-                _context.DailyGoalLogs.AddRange(logs);
-                await _context.SaveChangesAsync();
-                existing = logs;
-            }
+        if (missing.Count > 0)
+        {
+            _context.DailyGoalLogs.AddRange(missing);
+            await _context.SaveChangesAsync();
+            existing.AddRange(missing);
         }
 
         var result = existing.Select(d => new DailyGoalLogDto
