@@ -1,8 +1,9 @@
-// Sidebar.jsx — Barra lateral izquierda. Gestiona los goals predeterminados (gym-default-goals).
+// Sidebar.jsx — Barra lateral izquierda. Gestiona los goals predeterminados via API.
 // Cuando los goals cambian, dispara el evento 'defaultGoalsChanged' para que DashboardPage se actualice.
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Dumbbell, User, X, Plus, Trash2, Target, LogOut, Moon, Sun } from 'lucide-react';
+import { getMe, getGoals, createGoal, deleteGoal } from '../services/api';
 import './Sidebar.css';
 
 function getUserName() {
@@ -39,25 +40,12 @@ function getEmail() {
   }
 }
 
-function loadDefaultGoals() {
-  try {
-    return JSON.parse(localStorage.getItem('gym-default-goals') || '[]');
-  } catch {
-    return [];
-  }
-}
-
-function persistDefaultGoals(goals) {
-  localStorage.setItem('gym-default-goals', JSON.stringify(goals));
-  // Notificar a DashboardPage para que reconstruya los goals del día
-  window.dispatchEvent(new CustomEvent('defaultGoalsChanged'));
-}
-
 export function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
-  const name = getUserName();
+  const [name, setName] = useState(getUserName);
   const email = getEmail();
   const initial = name.charAt(0).toUpperCase();
+  const [avatar, setAvatar] = useState(null);
 
   const [defaultGoals, setDefaultGoals] = useState([]);
   const [newLabel, setNewLabel] = useState('');
@@ -78,27 +66,43 @@ export function Sidebar({ isOpen, onClose }) {
     }
   };
 
-  // Recargar defaults cada vez que el sidebar se abre
+  // Recargar goals cada vez que el sidebar se abre
   useEffect(() => {
-    if (isOpen) setDefaultGoals(loadDefaultGoals());
+    if (isOpen) getGoals().then(setDefaultGoals).catch(() => {});
   }, [isOpen]);
 
-  const addDefaultGoal = () => {
+  // Cargar avatar (solo una vez) y escuchar cambios
+  useEffect(() => {
+    getMe().then(data => { if (data?.avatarBase64) setAvatar(data.avatarBase64); }).catch(() => {});
+    const onAvatar = (e) => setAvatar(e.detail);
+    const onName  = (e) => setName(e.detail);
+    window.addEventListener('avatarChanged', onAvatar);
+    window.addEventListener('nameChanged', onName);
+    return () => {
+      window.removeEventListener('avatarChanged', onAvatar);
+      window.removeEventListener('nameChanged', onName);
+    };
+  }, []);
+
+  const addDefaultGoal = async () => {
     if (!newLabel.trim()) return;
-    const updated = [
-      ...defaultGoals,
-      { id: crypto.randomUUID(), label: newLabel.trim() },
-    ];
-    setDefaultGoals(updated);
-    persistDefaultGoals(updated);
-    setNewLabel('');
-    setShowAdd(false);
+    try {
+      const created = await createGoal(newLabel.trim());
+      setDefaultGoals(prev => [...prev, created]);
+      setNewLabel('');
+      setShowAdd(false);
+      window.dispatchEvent(new CustomEvent('defaultGoalsChanged'));
+    } catch { /* ignorar */ }
   };
 
-  const removeDefaultGoal = (id) => {
-    const updated = defaultGoals.filter(g => g.id !== id);
-    setDefaultGoals(updated);
-    persistDefaultGoals(updated);
+  const removeDefaultGoal = async (id) => {
+    setDefaultGoals(prev => prev.filter(g => g.id !== id));
+    try {
+      await deleteGoal(id);
+      window.dispatchEvent(new CustomEvent('defaultGoalsChanged'));
+    } catch {
+      getGoals().then(setDefaultGoals).catch(() => {});
+    }
   };
 
   const handleLogout = () => {
@@ -122,7 +126,12 @@ export function Sidebar({ isOpen, onClose }) {
         {/* Header: usuario */}
         <div className="sidebar-header">
           <div className="sidebar-user-info">
-            <div className="sidebar-avatar">{initial}</div>
+            <div className="sidebar-avatar">
+              {avatar
+                ? <img src={avatar} alt="" className="sidebar-avatar-img" />
+                : initial
+              }
+            </div>
             <div className="sidebar-user-text">
               <span className="sidebar-username">{name}</span>
               {email && <span className="sidebar-email">{email}</span>}

@@ -11,4 +11,6 @@ public class GymDbContext : DbContext
     public DbSet<Exercise> Exercises => Set<Exercise>();
     public DbSet<Workout> Workouts => Set<Workout>();
     public DbSet<WorkoutExercise> WorkoutExercises => Set<WorkoutExercise>();
+    public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<DailyGoalLog> DailyGoalLogs => Set<DailyGoalLog>();
 }

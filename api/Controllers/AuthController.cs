@@ -1,6 +1,7 @@
 using GymApi.Data;
 using GymApi.DTOs;
 using GymApi.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -75,5 +76,59 @@ public class AuthController : ControllerBase
             signingCredentials: creds);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    // GET api/auth/me
+    [HttpGet("me")]
+    [Authorize]
+    public async Task<ActionResult<UserProfileDto>> GetMe()
+    {
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _context.Users.FindAsync(userId);
+        if (user is null) return NotFound();
+
+        return Ok(new UserProfileDto
+        {
+            Name = user.Name,
+            Email = user.Email,
+            AvatarBase64 = user.AvatarBase64
+        });
+    }
+
+    // PUT api/auth/avatar
+    [HttpPut("avatar")]
+    [Authorize]
+    public async Task<IActionResult> UpdateAvatar(AvatarDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.AvatarBase64))
+            return BadRequest("Avatar no puede estar vacío.");
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _context.Users.FindAsync(userId);
+        if (user is null) return NotFound();
+
+        user.AvatarBase64 = dto.AvatarBase64;
+        await _context.SaveChangesAsync();
+        return NoContent();
+    }
+
+    // PUT api/auth/name
+    [HttpPut("name")]
+    [Authorize]
+    public async Task<IActionResult> UpdateName(UpdateNameDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Name))
+            return BadRequest("El nombre no puede estar vacío.");
+
+        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var user = await _context.Users.FindAsync(userId);
+        if (user is null) return NotFound();
+
+        user.Name = dto.Name.Trim();
+        await _context.SaveChangesAsync();
+
+        // Devolver nuevo token con el nombre actualizado
+        var token = GenerateToken(user);
+        return Ok(new TokenDto { Token = token });
     }
 }

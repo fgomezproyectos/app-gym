@@ -1,4 +1,37 @@
-# CHANGELOG — 18 de abril de 2026
+# CHANGELOG
+
+---
+
+## 19 de abril de 2026 — Goals en BD + foto y nombre de perfil editables
+
+### Goals migrados a PostgreSQL
+
+**Archivos nuevos:**
+- `api/Models/Goal.cs` — plantilla de goal predeterminado por usuario
+- `api/Models/DailyGoalLog.cs` — progreso diario por usuario
+- `api/DTOs/GoalDto.cs`
+- `api/Controllers/GoalsController.cs` — `GET/POST/DELETE /api/goals`
+- `api/Controllers/DailyGoalsController.cs` — `GET/POST/PATCH/DELETE /api/daily-goals` + `GET /api/daily-goals/streak`
+- Migración `AddGoalsAndDailyGoalLogs` aplicada
+
+Lógica destacada:
+- `GET /api/daily-goals` auto-genera los logs del día desde los goals predeterminados si aún no existen
+- `GET /api/daily-goals/streak` calcula días consecutivos con al menos 1 goal completado
+- `DashboardPage.jsx` reescrito para consumir la API (eliminado localStorage para goals)
+- `Sidebar.jsx` actualizado para gestionar goals predeterminados vía API
+
+### Foto de perfil y nombre editables
+
+**Archivos modificados:**
+- `api/Models/User.cs` — columna `AvatarBase64`
+- `api/Controllers/AuthController.cs` — endpoints `GET /api/auth/me`, `PUT /api/auth/avatar`, `PUT /api/auth/name`
+- `web/src/pages/ProfilePage.jsx` — upload con compresión Canvas (400×400 JPEG 0.7), edición inline del nombre
+- `web/src/components/Sidebar.jsx` — muestra avatar cargado desde API
+- `web/src/pages/DashboardPage.jsx` — muestra avatar cargado desde API
+
+---
+
+## 18 de abril de 2026
 
 ## Rediseño completo de la UI y nuevas funcionalidades
 

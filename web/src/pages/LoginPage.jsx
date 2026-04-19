@@ -20,7 +20,7 @@ export default function LoginPage() {
     try {
       const data = await login(email, password);
       localStorage.setItem('token', data.token);
-      navigate('/workouts');
+      navigate('/dashboard');
     } catch (err) {
       setError('Email o contraseña incorrectos');
     } finally {

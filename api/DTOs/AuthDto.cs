@@ -17,3 +17,20 @@ public class TokenDto
 {
     public string Token { get; set; } = string.Empty;
 }
+
+public class UserProfileDto
+{
+    public string Name { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string? AvatarBase64 { get; set; }
+}
+
+public class AvatarDto
+{
+    public string AvatarBase64 { get; set; } = string.Empty;
+}
+
+public class UpdateNameDto
+{
+    public string Name { get; set; } = string.Empty;
+}

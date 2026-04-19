@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Plus, X, Check, Menu } from 'lucide-react';
 import { useSidebar } from '../components/ProtectedLayout';
+import { getMe, getDailyGoals, createDailyGoal, patchDailyGoal, deleteDailyGoal, getDailyStreak } from '../services/api';
 import './DashboardPage.css';
 
 // Decodifica el nombre del usuario desde el JWT sin librerías externas
@@ -12,7 +13,6 @@ function getUserName() {
     const payload = JSON.parse(
       atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))
     );
-    // ASP.NET Core serializa ClaimTypes.Name con la URL completa
     return (
       payload['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] ||
       payload.name ||
@@ -26,7 +26,7 @@ function getUserName() {
 // Devuelve las 7 fechas ISO de la semana actual (lunes→domingo)
 function getWeekDays() {
   const today = new Date();
-  const dow = today.getDay(); // 0=Dom
+  const dow = today.getDay();
   const mondayOffset = dow === 0 ? -6 : 1 - dow;
   const monday = new Date(today);
   monday.setDate(today.getDate() + mondayOffset);
@@ -41,49 +41,12 @@ function getTodayStr() {
   return new Date().toISOString().split('T')[0];
 }
 
-function loadDefaultGoals() {
-  try {
-    return JSON.parse(localStorage.getItem('gym-default-goals') || '[]');
-  } catch {
-    return [];
-  }
-}
-
-// Construye la lista de goals del día combinando defaults + progreso diario guardado.
-// - Si es un día nuevo: parte de cero con los defaults.
-// - Si ya hay datos de hoy: conserva el progreso, añade defaults nuevos, elimina los borrados.
-function buildDailyGoals(defaultGoals) {
-  const today = getTodayStr();
-  const defaultIds = new Set(defaultGoals.map(d => d.id));
-  try {
-    const stored = JSON.parse(localStorage.getItem('gym-daily-goals') || 'null');
-    if (stored && stored.date === today) {
-      // 1. Filtrar goals de default que ya no existen en gym-default-goals
-      const filtered = stored.goals.filter(g => !g.isDefault || defaultIds.has(g.id));
-      // 2. Añadir defaults nuevos que aún no están en el día
-      const existingIds = new Set(filtered.map(g => g.id));
-      const missing = defaultGoals
-        .filter(dg => !existingIds.has(dg.id))
-        .map(dg => ({ id: dg.id, label: dg.label, done: false, isDefault: true }));
-      return [...filtered, ...missing];
-    }
-  } catch { /* ignorar errores de parse */ }
-  // Día nuevo o primera vez: empezar desde defaults
-  return defaultGoals.map(dg => ({ id: dg.id, label: dg.label, done: false, isDefault: true }));
-}
-
-function saveDailyGoals(goals) {
-  localStorage.setItem(
-    'gym-daily-goals',
-    JSON.stringify({ date: getTodayStr(), goals })
-  );
-}
-
 const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 export default function DashboardPage() {
   const openSidebar = useSidebar();
-  const name = getUserName();
+  const [name, setName] = useState(getUserName);
+  const [avatar, setAvatar] = useState(null);
   const initial = name.charAt(0).toUpperCase();
 
   const [completedDays] = useState(() => {
@@ -91,20 +54,35 @@ export default function DashboardPage() {
       return JSON.parse(localStorage.getItem('gym-completed-days') || '[]');
     } catch { return []; }
   });
-  const [goals, setGoals] = useState(() => {
-    const initial = buildDailyGoals(loadDefaultGoals());
-    saveDailyGoals(initial);
-    return initial;
-  });
+
+  const [goals, setGoals] = useState([]);
+  const [streak, setStreak] = useState(0);
   const [newGoalLabel, setNewGoalLabel] = useState('');
   const [showAddGoal, setShowAddGoal] = useState(false);
 
-  // Escuchar cambios en los goals predeterminados (disparados por el Sidebar)
+  // Carga inicial: avatar + goals del día + racha
+  useEffect(() => {
+    getMe().then(data => { if (data?.avatarBase64) setAvatar(data.avatarBase64); }).catch(() => {});
+    getDailyGoals().then(setGoals).catch(() => {});
+    getDailyStreak().then(setStreak).catch(() => {});
+  }, []);
+
+  // Escuchar cambios de avatar y nombre desde ProfilePage
+  useEffect(() => {
+    const onAvatar = (e) => setAvatar(e.detail);
+    const onName  = (e) => setName(e.detail);
+    window.addEventListener('avatarChanged', onAvatar);
+    window.addEventListener('nameChanged', onName);
+    return () => {
+      window.removeEventListener('avatarChanged', onAvatar);
+      window.removeEventListener('nameChanged', onName);
+    };
+  }, []);
+
+  // Recargar goals cuando el Sidebar añade/elimina un default
   useEffect(() => {
     const handle = () => {
-      const updated = buildDailyGoals(loadDefaultGoals());
-      setGoals(updated);
-      saveDailyGoals(updated);
+      getDailyGoals().then(setGoals).catch(() => {});
     };
     window.addEventListener('defaultGoalsChanged', handle);
     return () => window.removeEventListener('defaultGoalsChanged', handle);
@@ -118,46 +96,45 @@ export default function DashboardPage() {
     [weekDays, completedDays]
   );
 
-  const currentStreak = useMemo(() => {
-    let streak = 0;
-    const base = new Date();
-    for (let i = 0; i < 365; i++) {
-      const d = new Date(base);
-      d.setDate(base.getDate() - i);
-      const ds = d.toISOString().split('T')[0];
-      if (completedDays.some(c => c.date === ds)) streak++;
-      else break;
-    }
-    return streak;
-  }, [completedDays]);
-
   const goalsDone = goals.filter(g => g.done).length;
   const goalsTotal = goals.length;
   const progressPct = goalsTotal > 0 ? Math.round((goalsDone / goalsTotal) * 100) : 0;
 
-  const toggleGoal = (id) => {
-    const updated = goals.map(g => (g.id === id ? { ...g, done: !g.done } : g));
-    setGoals(updated);
-    saveDailyGoals(updated);
+  const toggleGoal = async (id, currentDone) => {
+    // Actualización optimista
+    setGoals(prev => prev.map(g => g.id === id ? { ...g, done: !currentDone } : g));
+    try {
+      await patchDailyGoal(id, !currentDone);
+      // Actualizar racha por si se completa el primero del día
+      getDailyStreak().then(setStreak).catch(() => {});
+    } catch {
+      // Revertir si falla
+      setGoals(prev => prev.map(g => g.id === id ? { ...g, done: currentDone } : g));
+    }
   };
 
-  const addGoal = () => {
+  const addGoal = async () => {
     if (!newGoalLabel.trim()) return;
-    // Los goals añadidos manualmente en el dashboard son "de hoy" (isDefault: false)
-    const updated = [
-      ...goals,
-      { id: crypto.randomUUID(), label: newGoalLabel.trim(), done: false, isDefault: false },
-    ];
-    setGoals(updated);
-    saveDailyGoals(updated);
-    setNewGoalLabel('');
-    setShowAddGoal(false);
+    try {
+      const created = await createDailyGoal(newGoalLabel.trim(), today);
+      setGoals(prev => [...prev, created]);
+      setNewGoalLabel('');
+      setShowAddGoal(false);
+    } catch { /* ignorar */ }
   };
 
-  const removeGoal = (id) => {
-    const updated = goals.filter(g => g.id !== id);
-    setGoals(updated);
-    saveDailyGoals(updated);
+  const removeGoal = async (id, isDefault) => {
+    if (isDefault) {
+      // Goals default: no se borran desde aquí, solo se ocultan localmente hasta mañana
+      setGoals(prev => prev.filter(g => g.id !== id));
+      return;
+    }
+    setGoals(prev => prev.filter(g => g.id !== id));
+    try {
+      await deleteDailyGoal(id);
+    } catch {
+      getDailyGoals().then(setGoals).catch(() => {});
+    }
   };
 
   return (
@@ -170,7 +147,10 @@ export default function DashboardPage() {
             className="dash-avatar"
             aria-hidden="true"
           >
-            {initial}
+            {avatar
+              ? <img src={avatar} alt="" className="dash-avatar-img" />
+              : initial
+            }
           </div>
           <div className="dash-greeting">
             <span className="dash-hello">Hola,</span>
@@ -190,7 +170,7 @@ export default function DashboardPage() {
             <span className="dash-stat-label">Días esta semana</span>
           </div>
           <div className="dash-stat-card stat-streak">
-            <span className="dash-stat-value">{currentStreak}</span>
+            <span className="dash-stat-value">{streak}</span>
             <span className="dash-stat-label">Racha (días)</span>
           </div>
           <div className="dash-stat-card stat-goals">
@@ -283,7 +263,7 @@ export default function DashboardPage() {
               <div key={g.id} className={`goal-item${g.done ? ' done' : ''}`}>
                 <button
                   className={`goal-checkbox${g.done ? ' checked' : ''}`}
-                  onClick={() => toggleGoal(g.id)}
+                  onClick={() => toggleGoal(g.id, g.done)}
                   aria-label={g.done ? 'Marcar como pendiente' : 'Marcar como hecho'}
                 >
                   {g.done && <Check size={13} />}
@@ -291,7 +271,7 @@ export default function DashboardPage() {
                 <span className="goal-label">{g.label}</span>
                 <button
                   className="goal-remove"
-                  onClick={() => removeGoal(g.id)}
+                  onClick={() => removeGoal(g.id, g.isDefault)}
                   aria-label={g.isDefault ? 'Saltar hoy' : 'Eliminar objetivo'}
                   title={g.isDefault ? 'Saltar hoy (reaparecerá mañana)' : 'Eliminar'}
                 >
