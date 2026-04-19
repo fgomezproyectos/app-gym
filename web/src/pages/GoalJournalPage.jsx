@@ -118,8 +118,14 @@ export default function GoalJournalPage() {
                   />
                 </svg>
                 <div className="goal-journal-summary-text">
-                  <span className="goal-journal-completed">{completedCount}</span>
-                  <span className="goal-journal-total">/{totalCount}</span>
+                  {totalCount === 0 ? (
+                    <span className="goal-journal-completed">Sin</span>
+                  ) : (
+                    <>
+                      <span className="goal-journal-completed">{completedCount}</span>
+                      <span className="goal-journal-total">/{totalCount}</span>
+                    </>
+                  )}
                 </div>
               </div>
               <p className="goal-journal-summary-label">

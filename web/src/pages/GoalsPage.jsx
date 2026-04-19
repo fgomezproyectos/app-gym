@@ -92,7 +92,7 @@ export default function GoalsPage() {
           className={`goals-tab ${activeTab === 'today' ? 'active' : ''}`}
           onClick={() => setActiveTab('today')}
         >
-          Goals de Hoy ({completedCount}/{totalCount})
+          Goals de Hoy ({totalCount === 0 ? 'Sin' : `${completedCount}/${totalCount}`})
         </button>
       </div>
 
