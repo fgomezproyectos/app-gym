@@ -1,5 +1,6 @@
 // DashboardPage.jsx — Ruta: /dashboard (protegida). Página principal tras el login.
 import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Plus, X, Check, Menu } from 'lucide-react';
 import { useSidebar } from '../components/ProtectedLayout';
 import { getMe, getDailyGoals, createDailyGoal, patchDailyGoal, deleteDailyGoal, getDailyStreak } from '../services/api';
@@ -44,6 +45,7 @@ function getTodayStr() {
 const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 
 export default function DashboardPage() {
+  const navigate = useNavigate();
   const openSidebar = useSidebar();
   const [name, setName] = useState(getUserName);
   const [avatar, setAvatar] = useState(null);
@@ -142,7 +144,7 @@ export default function DashboardPage() {
       <div className="dashboard-inner">
 
         {/* ── Header ── */}
-        <div className="dash-header">
+        <div className="dash-header" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>
           <div
             className="dash-avatar"
             aria-hidden="true"
@@ -156,7 +158,7 @@ export default function DashboardPage() {
             <span className="dash-hello">Hola,</span>
             <span className="dash-name">{name}</span>
           </div>
-          <button className="dash-menu-btn" onClick={openSidebar} aria-label="Abrir menú">
+          <button className="dash-menu-btn" onClick={(e) => { e.stopPropagation(); openSidebar(); }} aria-label="Abrir menú">
             <Menu size={20} />
           </button>
         </div>
@@ -175,7 +177,7 @@ export default function DashboardPage() {
           </div>
           <div className="dash-stat-card stat-goals">
             <span className="dash-stat-value">
-              {goalsDone}/{goalsTotal > 0 ? goalsTotal : '—'}
+              {goalsTotal === 0 ? 'Sin' : `${goalsDone}/${goalsTotal}`}
             </span>
             <span className="dash-stat-label">Goals hoy</span>
           </div>

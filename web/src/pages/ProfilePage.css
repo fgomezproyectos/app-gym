@@ -240,3 +240,75 @@
 [data-theme="dark"] .profile-email              { color: #5a5f7a; }
 [data-theme="dark"] .btn-logout-profile         { background: #1a1b23; border-color: #2e3044; color: #f87171; }
 [data-theme="dark"] .btn-logout-profile:hover   { background: rgba(239,68,68,0.1); border-color: #f87171; }
+
+/* ── Goals Section ── */
+.profile-goals-section {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-goals-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.profile-goals-header svg {
+  color: #4f8ef7;
+  flex-shrink: 0;
+}
+
+.profile-goals-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1b1f3a;
+  margin: 0;
+}
+
+.profile-goals-empty {
+  color: #6b7280;
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}
+
+.profile-goals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.profile-goal-item {
+  padding: 0.75rem 1rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  color: #374151;
+  font-size: 0.95rem;
+}
+
+.profile-goal-label {
+  display: block;
+  color: #1b1f3a;
+  font-weight: 500;
+}
+
+.profile-goals-count {
+  font-size: 0.85rem;
+  color: #9ca3af;
+  text-align: center;
+  margin-top: 0.75rem;
+  margin-bottom: 0;
+}
+
+[data-theme="dark"] .profile-goals-section         { background: #1a1b23; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+[data-theme="dark"] .profile-goals-title          { color: #eaeaea; }
+[data-theme="dark"] .profile-goals-empty          { color: #5a5f7a; }
+[data-theme="dark"] .profile-goal-item            { background: #2e3044; border-color: #3a3d56; color: #a8afc0; }
+[data-theme="dark"] .profile-goal-label           { color: #eaeaea; }
+[data-theme="dark"] .profile-goals-count          { color: #5a5f7a; }

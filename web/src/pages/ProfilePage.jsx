@@ -1,9 +1,9 @@
 // ProfilePage.jsx — Ruta: /profile (protegida). Foto de perfil + cambio de nombre.
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Camera, Menu, Check, X, Pencil } from 'lucide-react';
+import { LogOut, Camera, Menu, Check, X, Pencil, Target } from 'lucide-react';
 import { useSidebar } from '../components/ProtectedLayout';
-import { getMe, updateAvatar, updateName } from '../services/api';
+import { getMe, updateAvatar, updateName, getGoals } from '../services/api';
 import './ProfilePage.css';
 import '../styles/general.css';
 
@@ -44,6 +44,8 @@ export default function ProfilePage() {
   const [nameSaving, setNameSaving] = useState(false);
   const [nameError, setNameError] = useState('');
 
+  const [goals, setGoals] = useState([]);
+
   useEffect(() => {
     getMe()
       .then(data => {
@@ -52,6 +54,10 @@ export default function ProfilePage() {
       })
       .catch(() => {/* sin conexión: no bloqueamos */})
       .finally(() => setLoading(false));
+    
+    getGoals()
+      .then(data => setGoals(data || []))
+      .catch(() => {/* sin conexión: no bloqueamos */});
   }, []);
 
   const handleFileChange = async (e) => {
@@ -169,6 +175,26 @@ export default function ProfilePage() {
           {nameError && <p className="profile-name-error">{nameError}</p>}
 
           <span className="profile-email">{profile?.email ?? ''}</span>
+        </div>
+
+        {/* Goals */}
+        <div className="profile-goals-section">
+          <div className="profile-goals-header">
+            <Target size={20} />
+            <h2 className="profile-goals-title">Tus Goals Configurados</h2>
+          </div>
+          {goals.length === 0 ? (
+            <p className="profile-goals-empty">Sin goals configurados</p>
+          ) : (
+            <div className="profile-goals-list">
+              {goals.map(goal => (
+                <div key={goal.id} className="profile-goal-item">
+                  <span className="profile-goal-label">{goal.label}</span>
+                </div>
+              ))}
+              <p className="profile-goals-count">{goals.length} goal{goals.length !== 1 ? 's' : ''} configurado{goals.length !== 1 ? 's' : ''}</p>
+            </div>
+          )}
         </div>
 
         {/* Cerrar sesión */}
