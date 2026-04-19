@@ -96,44 +96,53 @@ html:not([data-theme="dark"]) {
 .goals-manage-section {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 1.5rem;
 }
 
-.goals-create-card,
-.goals-list-card {
-  background-color: var(--goals-bg-primary);
-  border: 1px solid var(--goals-border);
-  border-radius: 0.75rem;
-  padding: 1.5rem;
+.goals-manage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.goals-create-card h2,
-.goals-list-card h2 {
-  font-size: 1.25rem;
+.goals-manage-header h2 {
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--goals-text-primary);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
-.goals-create-hint {
+.goals-manage-hint {
   color: var(--goals-text-secondary);
-  font-size: 0.9rem;
-  margin: 0 0 1rem 0;
+  font-size: 0.85rem;
+  margin: 0;
 }
 
-.goals-create-input-group {
+.btn-add-goal-manage {
+  padding: 0.5rem;
+  background-color: var(--goals-accent);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+}
+
+.btn-add-goal-manage:hover {
+  background-color: #3a7fd9;
+}
+
+.goals-manage-add-row {
   display: flex;
   gap: 0.75rem;
-  margin-top: 1rem;
 }
 
-@media (max-width: 600px) {
-  .goals-create-input-group {
-    flex-direction: column;
-  }
-}
-
-.goals-create-input {
+.goals-manage-add-input {
   flex: 1;
   padding: 0.75rem 1rem;
   background-color: var(--goals-bg-secondary);
@@ -144,13 +153,13 @@ html:not([data-theme="dark"]) {
   transition: border-color 0.3s ease;
 }
 
-.goals-create-input:focus {
+.goals-manage-add-input:focus {
   outline: none;
   border-color: var(--goals-accent);
 }
 
-.goals-create-btn {
-  padding: 0.75rem 1.5rem;
+.goals-manage-add-btn {
+  padding: 0.75rem 1rem;
   background-color: var(--goals-accent);
   border: none;
   border-radius: 0.5rem;
@@ -164,59 +173,68 @@ html:not([data-theme="dark"]) {
   transition: background-color 0.3s ease;
 }
 
-.goals-create-btn:hover:not(:disabled) {
+.goals-manage-add-btn:hover:not(:disabled) {
   background-color: #3a7fd9;
 }
 
-.goals-create-btn:disabled {
+.goals-manage-add-btn:disabled {
   background-color: #666;
   cursor: not-allowed;
   opacity: 0.5;
 }
 
-/* Goals list */
-.goals-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.goals-list-item {
+.goals-manage-progress-wrap {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: var(--goals-bg-secondary);
+  justify-content: center;
+}
+
+.goals-manage-progress-label {
+  color: var(--goals-text-secondary);
+  font-size: 0.85rem;
+}
+
+.goals-manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.goals-manage-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background-color: var(--goals-bg-primary);
   border: 1px solid var(--goals-border);
   border-radius: 0.5rem;
   transition: all 0.3s ease;
 }
 
-.goals-list-item:hover {
+.goals-manage-item:hover {
   border-color: var(--goals-accent);
-  background-color: var(--goals-bg-primary);
+  background-color: var(--goals-bg-secondary);
 }
 
-.goals-list-item-content {
+.goals-manage-item-icon {
+  width: 24px;
+  height: 24px;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  flex: 1;
-}
-
-.goals-list-item-icon {
+  justify-content: center;
   color: var(--goals-accent);
   flex-shrink: 0;
 }
 
-.goals-list-item-label {
+.goals-manage-item-label {
+  flex: 1;
   color: var(--goals-text-primary);
   font-size: 0.95rem;
+  font-weight: 500;
 }
 
-.goals-list-item-delete {
-  padding: 0.5rem;
+.goals-manage-item-delete {
+  padding: 0.4rem;
   background: none;
   border: none;
   color: var(--goals-text-secondary);
@@ -225,17 +243,19 @@ html:not([data-theme="dark"]) {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.goals-list-item-delete:hover {
+.goals-manage-item-delete:hover {
   color: #ff4444;
 }
 
-.goals-empty {
+.goals-manage-empty {
   color: var(--goals-text-secondary);
   text-align: center;
   padding: 2rem 1rem;
   font-size: 0.95rem;
+  margin: 0;
 }
 
 /* Today section */

@@ -312,9 +312,229 @@ html:not([data-theme="dark"]) .goal-journal-future-badge {
   color: var(--journal-text-secondary);
 }
 
+/* View Toggle */
+.goal-journal-view-toggle {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background-color: var(--journal-bg-primary);
+  border: 1px solid var(--journal-border);
+  border-radius: 0.5rem;
+  color: var(--journal-text-secondary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggle-btn:hover {
+  border-color: var(--journal-accent);
+  color: var(--journal-accent);
+}
+
+.toggle-btn.active {
+  background-color: var(--journal-accent);
+  border-color: var(--journal-accent);
+  color: white;
+}
+
+/* Weekly View */
+.goal-journal-weekly-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.weekly-day-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background-color: var(--journal-bg-primary);
+  border: 1px solid var(--journal-border);
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.weekly-day-cell.is-today {
+  border-color: var(--journal-accent);
+  background-color: var(--journal-success-bg);
+}
+
+.weekly-day-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--journal-text-secondary);
+  text-transform: uppercase;
+}
+
+.weekly-day-number {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--journal-text-primary);
+}
+
+.weekly-day-indicator {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.weekly-empty {
+  color: var(--journal-text-secondary);
+  font-size: 0.9rem;
+}
+
+.weekly-bar-bg {
+  width: 100%;
+  height: 4px;
+  background-color: var(--journal-border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.weekly-bar-fill {
+  height: 100%;
+  background-color: var(--journal-accent);
+  transition: width 0.3s ease;
+}
+
+.weekly-percentage {
+  font-size: 0.75rem;
+  color: var(--journal-accent);
+  font-weight: 600;
+}
+
+/* Monthly Calendar */
+.goal-journal-monthly-calendar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--journal-text-secondary);
+  text-transform: uppercase;
+  padding: 0.5rem 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.5rem;
+  background-color: var(--journal-bg-primary);
+  border: 1px solid var(--journal-border);
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--journal-text-primary);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.calendar-day.is-today {
+  border-color: var(--journal-accent);
+  background-color: var(--journal-success-bg);
+  font-weight: 600;
+}
+
+.calendar-day.completed {
+  background-color: var(--journal-success-bg);
+  border-color: var(--journal-accent);
+}
+
+.calendar-day-number {
+  font-weight: 600;
+}
+
+.calendar-day-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-checkmark {
+  font-size: 0.9rem;
+  color: var(--journal-accent);
+  font-weight: 700;
+}
+
+.calendar-dot {
+  width: 4px;
+  height: 4px;
+  background-color: var(--journal-accent);
+  border-radius: 50%;
+}
+
 @media (max-width: 600px) {
   .goal-journal-page {
     padding: 1rem;
+  }
+
+  .goal-journal-view-toggle {
+    flex-wrap: wrap;
+  }
+
+  .toggle-btn {
+    flex: 1;
+    min-width: 80px;
+    justify-content: center;
+  }
+
+  .goal-journal-weekly-grid {
+    grid-template-columns: repeat(7, 1fr);
+    gap: 0.5rem;
+  }
+
+  .weekly-day-cell {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .calendar-grid {
+    gap: 0.3rem;
+  }
+
+  .calendar-day {
+    padding: 0.25rem;
+    font-size: 0.75rem;
   }
 
   .goal-journal-date-selector {

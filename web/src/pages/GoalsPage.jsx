@@ -10,6 +10,7 @@ export default function GoalsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState('manage'); // 'manage' o 'today'
+  const [showAddGoal, setShowAddGoal] = useState(false);
 
   // Cargar goals predeterminados y goals de hoy
   useEffect(() => {
@@ -100,57 +101,76 @@ export default function GoalsPage() {
         <div className="goals-loading">Cargando...</div>
       ) : activeTab === 'manage' ? (
         <div className="goals-manage-section">
-          <div className="goals-create-card">
-            <h2>Crear nuevo goal predeterminado</h2>
-            <p className="goals-create-hint">
-              Los goals que crees aquí aparecerán automáticamente cada día
-            </p>
-            <div className="goals-create-input-group">
+          <div className="goals-manage-header">
+            <div>
+              <h2>Goals predeterminados ({goals.length})</h2>
+              <p className="goals-manage-hint">
+                Los goals que crees aquí aparecerán automáticamente cada día
+              </p>
+            </div>
+            <button
+              className="btn-add-goal-manage"
+              onClick={() => setShowAddGoal(v => !v)}
+              aria-label="Agregar nuevo goal"
+              title="Agregar nuevo goal"
+            >
+              <Plus size={20} />
+            </button>
+          </div>
+
+          {showAddGoal && (
+            <div className="goals-manage-add-row">
               <input
                 type="text"
                 placeholder="Ej: Beber 2L de agua, 30min de ejercicio..."
                 value={newLabel}
                 onChange={e => setNewLabel(e.target.value)}
-                className="goals-create-input"
+                className="goals-manage-add-input"
                 onKeyDown={e => e.key === 'Enter' && handleCreateGoal()}
+                autoFocus
               />
               <button
-                className="goals-create-btn"
+                className="goals-manage-add-btn"
                 onClick={handleCreateGoal}
                 disabled={!newLabel.trim()}
+                aria-label="Confirmar"
               >
-                <Plus size={18} />
-                Crear
+                <Check size={16} />
               </button>
             </div>
-          </div>
+          )}
 
-          <div className="goals-list-card">
-            <h2>Goals predeterminados ({goals.length})</h2>
-            {goals.length === 0 ? (
-              <p className="goals-empty">
-                No tienes goals predeterminados. ¡Crea uno para empezar!
-              </p>
-            ) : (
-              <div className="goals-list">
-                {goals.map(goal => (
-                  <div key={goal.id} className="goals-list-item">
-                    <div className="goals-list-item-content">
-                      <Target size={18} className="goals-list-item-icon" />
-                      <span className="goals-list-item-label">{goal.label}</span>
-                    </div>
-                    <button
-                      className="goals-list-item-delete"
-                      onClick={() => handleDeleteGoal(goal.id)}
-                      title="Eliminar goal"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+          {goals.length > 0 && (
+            <div className="goals-manage-progress-wrap">
+              <span className="goals-manage-progress-label">
+                {goals.length} goal{goals.length !== 1 ? 's' : ''} configurado{goals.length !== 1 ? 's' : ''}
+              </span>
+            </div>
+          )}
+
+          {goals.length === 0 ? (
+            <p className="goals-manage-empty">
+              No tienes goals predeterminados. ¡Crea uno para empezar!
+            </p>
+          ) : (
+            <div className="goals-manage-list">
+              {goals.map(goal => (
+                <div key={goal.id} className="goals-manage-item">
+                  <div className="goals-manage-item-icon">
+                    <Target size={16} />
                   </div>
-                ))}
-              </div>
-            )}
-          </div>
+                  <span className="goals-manage-item-label">{goal.label}</span>
+                  <button
+                    className="goals-manage-item-delete"
+                    onClick={() => handleDeleteGoal(goal.id)}
+                    title="Eliminar goal"
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="goals-today-section">
