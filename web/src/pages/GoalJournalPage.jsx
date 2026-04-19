@@ -43,10 +43,6 @@ export default function GoalJournalPage() {
     }
   };
 
-  const handleToday = () => {
-    setSelectedDate(new Date());
-  };
-
   const isToday =
     selectedDate.toDateString() === new Date().toDateString();
   const isFuture = selectedDate > new Date();
@@ -99,10 +95,6 @@ export default function GoalJournalPage() {
           <ChevronRight size={20} />
         </button>
       </div>
-
-      <button className="goal-journal-today-btn" onClick={handleToday}>
-        Ir a hoy
-      </button>
 
       {loading ? (
         <div className="goal-journal-loading">Cargando...</div>
