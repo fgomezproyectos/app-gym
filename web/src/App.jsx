@@ -4,6 +4,8 @@ import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
 import WorkoutsPage from './pages/WorkoutsPage';
 import ProfilePage from './pages/ProfilePage';
+import GoalsPage from './pages/GoalsPage';
+import GoalJournalPage from './pages/GoalJournalPage';
 import { ProtectedLayout } from './components/ProtectedLayout';
 
 function PrivateRoute({ children }) {
@@ -38,6 +40,22 @@ function App() {
           element={
             <PrivateRoute>
               <ProtectedLayout><ProfilePage /></ProtectedLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/goals"
+          element={
+            <PrivateRoute>
+              <ProtectedLayout><GoalsPage /></ProtectedLayout>
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/goal-journal"
+          element={
+            <PrivateRoute>
+              <ProtectedLayout><GoalJournalPage /></ProtectedLayout>
             </PrivateRoute>
           }
         />

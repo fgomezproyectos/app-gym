@@ -159,4 +159,37 @@ public class DailyGoalsController : ControllerBase
 
         return Ok(streak);
     }
+
+    // GET api/daily-goals/range?startDate=yyyy-MM-dd&endDate=yyyy-MM-dd
+    [HttpGet("range")]
+    public async Task<ActionResult<IEnumerable<object>>> GetRange(
+        [FromQuery] string? startDate,
+        [FromQuery] string? endDate)
+    {
+        if (string.IsNullOrWhiteSpace(startDate) || string.IsNullOrWhiteSpace(endDate))
+            return BadRequest("startDate y endDate son requeridos en formato yyyy-MM-dd.");
+
+        if (!DateOnly.TryParse(startDate, out var start) || !DateOnly.TryParse(endDate, out var end))
+            return BadRequest("Formato de fecha inválido. Esperado: yyyy-MM-dd.");
+
+        if (start > end)
+            return BadRequest("startDate no puede ser mayor que endDate.");
+
+        var logs = await _context.DailyGoalLogs
+            .Where(d => d.UserId == UserId && d.Date >= start && d.Date <= end)
+            .OrderBy(d => d.Date)
+            .ToListAsync();
+
+        var result = logs.Select(d => new
+        {
+            d.Id,
+            d.GoalId,
+            d.Label,
+            d.Date,
+            d.Done,
+            d.IsDefault
+        });
+
+        return Ok(result);
+    }
 }

@@ -2,7 +2,7 @@
 // Cuando los goals cambian, dispara el evento 'defaultGoalsChanged' para que DashboardPage se actualice.
 import { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Dumbbell, User, X, Plus, Trash2, Target, LogOut, Moon, Sun } from 'lucide-react';
+import { Home, Dumbbell, User, X, Plus, Trash2, Target, LogOut, Moon, Sun, BookOpen } from 'lucide-react';
 import { getMe, getGoals, createGoal, deleteGoal } from '../services/api';
 import './Sidebar.css';
 
@@ -159,6 +159,22 @@ export function Sidebar({ isOpen, onClose }) {
           >
             <Dumbbell size={18} />
             Entrenos
+          </NavLink>
+          <NavLink
+            to="/goals"
+            className={({ isActive }) => `sidebar-nav-item${isActive ? ' active' : ''}`}
+            onClick={onClose}
+          >
+            <Target size={18} />
+            Goals
+          </NavLink>
+          <NavLink
+            to="/goal-journal"
+            className={({ isActive }) => `sidebar-nav-item${isActive ? ' active' : ''}`}
+            onClick={onClose}
+          >
+            <BookOpen size={18} />
+            Diario de Goals
           </NavLink>
           <NavLink
             to="/profile"

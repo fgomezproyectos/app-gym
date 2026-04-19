@@ -1,0 +1,335 @@
+/* GoalJournalPage.css */
+
+.goal-journal-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.goal-journal-header {
+  margin-bottom: 1rem;
+}
+
+.goal-journal-title-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.goal-journal-title-section h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #eaeaea;
+  margin: 0;
+}
+
+.goal-journal-title-section svg {
+  color: #4f8ef7;
+}
+
+.goal-journal-subtitle {
+  color: #9a9aaa;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.goal-journal-error {
+  padding: 1rem;
+  background-color: #ff4444;
+  color: white;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* Date selector */
+.goal-journal-date-selector {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  background-color: #1a1b23;
+  border: 1px solid #2e3044;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.goal-journal-date-selector h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #eaeaea;
+  margin: 0;
+  text-transform: capitalize;
+  text-align: center;
+  flex: 1;
+}
+
+.goal-journal-date-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  justify-content: center;
+}
+
+.goal-journal-today-badge,
+.goal-journal-future-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.goal-journal-today-badge {
+  background-color: rgba(79, 142, 247, 0.2);
+  color: #4f8ef7;
+}
+
+.goal-journal-future-badge {
+  background-color: rgba(200, 200, 200, 0.2);
+  color: #ccc;
+}
+
+.goal-journal-nav-btn {
+  padding: 0.5rem;
+  background: none;
+  border: 1px solid #2e3044;
+  border-radius: 0.375rem;
+  color: #9a9aaa;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.goal-journal-nav-btn:hover:not(:disabled) {
+  border-color: #4f8ef7;
+  color: #4f8ef7;
+  background-color: rgba(79, 142, 247, 0.1);
+}
+
+.goal-journal-nav-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Today button */
+.goal-journal-today-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #4f8ef7;
+  border: none;
+  border-radius: 0.5rem;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  align-self: flex-start;
+}
+
+.goal-journal-today-btn:hover {
+  background-color: #3a7fd9;
+}
+
+/* Content */
+.goal-journal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.goal-journal-summary {
+  display: flex;
+  justify-content: center;
+}
+
+.goal-journal-summary-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding: 2rem;
+  background-color: #1a1b23;
+  border: 1px solid #2e3044;
+  border-radius: 0.75rem;
+}
+
+.goal-journal-summary-ring {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.goal-journal-summary-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.goal-journal-ring-background {
+  fill: none;
+  stroke: #2e3044;
+  stroke-width: 10;
+}
+
+.goal-journal-ring-fill {
+  fill: none;
+  stroke: #4f8ef7;
+  stroke-width: 10;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.5s ease;
+}
+
+.goal-journal-summary-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.goal-journal-completed {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4f8ef7;
+}
+
+.goal-journal-total {
+  display: block;
+  font-size: 1rem;
+  color: #9a9aaa;
+}
+
+.goal-journal-summary-label {
+  color: #9a9aaa;
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Goals list */
+.goal-journal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.goal-journal-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: #1a1b23;
+  border: 1px solid #2e3044;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.goal-journal-item.completed {
+  background-color: rgba(79, 142, 247, 0.1);
+  border-color: #4f8ef7;
+}
+
+.goal-journal-item.incomplete {
+  background-color: rgba(255, 68, 68, 0.05);
+  border-color: rgba(255, 68, 68, 0.3);
+}
+
+.goal-journal-item-check {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+.goal-journal-item.completed .goal-journal-item-check {
+  background-color: #4f8ef7;
+  color: white;
+}
+
+.goal-journal-item.incomplete .goal-journal-item-check {
+  background-color: rgba(255, 68, 68, 0.2);
+  color: #ff4444;
+}
+
+.goal-journal-checkmark {
+  font-size: 1.2rem;
+}
+
+.goal-journal-item-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.goal-journal-item-label {
+  color: #eaeaea;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.goal-journal-item.completed .goal-journal-item-label {
+  color: #4f8ef7;
+}
+
+.goal-journal-item-status {
+  color: #9a9aaa;
+  font-size: 0.8rem;
+}
+
+.goal-journal-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #9a9aaa;
+  font-size: 0.95rem;
+}
+
+.goal-journal-loading {
+  text-align: center;
+  padding: 2rem;
+  color: #9a9aaa;
+}
+
+@media (max-width: 600px) {
+  .goal-journal-page {
+    padding: 1rem;
+  }
+
+  .goal-journal-date-selector {
+    padding: 1rem;
+  }
+
+  .goal-journal-title-section h1 {
+    font-size: 1.5rem;
+  }
+
+  .goal-journal-summary-ring {
+    width: 120px;
+    height: 120px;
+  }
+
+  .goal-journal-completed {
+    font-size: 1.5rem;
+  }
+}
+
+@media (min-width: 600px) {
+  .goal-journal-page {
+    padding: 2rem;
+  }
+
+  .goal-journal-title-section h1 {
+    font-size: 2.5rem;
+  }
+}

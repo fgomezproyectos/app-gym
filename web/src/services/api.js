@@ -1,19 +1,21 @@
 /*
   api.js — Servicio centralizado de llamadas a la API.
   Funciones exportadas y dónde se usan:
-    login()              → LoginPage
-    register()           → RegisterPage
-    getMe()              → ProfilePage, Sidebar
-    updateAvatar()       → ProfilePage
-    updateName()         → ProfilePage
-    getGoals()           → Sidebar
-    createGoal()         → Sidebar
-    deleteGoal()         → Sidebar
-    getDailyGoals()      → DashboardPage
-    createDailyGoal()    → DashboardPage
-    patchDailyGoal()     → DashboardPage
-    deleteDailyGoal()    → DashboardPage
-    getDailyStreak()     → DashboardPage
+    login()                  → LoginPage
+    register()               → RegisterPage
+    getMe()                  → ProfilePage, Sidebar
+    updateAvatar()           → ProfilePage
+    updateName()             → ProfilePage
+    getGoals()               → Sidebar, GoalsPage
+    createGoal()             → Sidebar, GoalsPage
+    deleteGoal()             → Sidebar, GoalsPage
+    getDailyGoals()          → DashboardPage, GoalsPage
+    createDailyGoal()        → DashboardPage
+    patchDailyGoal()         → DashboardPage
+    markDailyGoal()          → GoalsPage, GoalJournalPage
+    deleteDailyGoal()        → DashboardPage
+    getDailyStreak()         → DashboardPage
+    getDailyGoalsByDateRange() → GoalJournalPage
 */
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5211';
 
@@ -113,6 +115,17 @@ export function patchDailyGoal(id, done) {
     method: 'PATCH',
     body: JSON.stringify({ done }),
   });
+}
+
+// Alias para patchDailyGoal (para GoalsPage y GoalJournalPage)
+export function markDailyGoal(id, done) {
+  return patchDailyGoal(id, done);
+}
+
+// Obtiene goals en un rango de fechas
+export function getDailyGoalsByDateRange(startDate, endDate) {
+  const q = `?startDate=${startDate}&endDate=${endDate}`;
+  return request(`/api/daily-goals/range${q}`);
 }
 
 // Elimina un goal puntual del día
