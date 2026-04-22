@@ -113,6 +113,7 @@
 .stat-days    { background: #daeef8; }
 .stat-streak  { background: #ebe6fb; }
 .stat-goals   { background: #d9f5e1; }
+.stat-pct     { background: #ffeaa7; }
 
 .dash-stat-value {
   font-size: 1.4rem;

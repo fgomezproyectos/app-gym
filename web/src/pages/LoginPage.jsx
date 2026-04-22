@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Dumbbell } from 'lucide-react';
 import { login } from '../services/api';
+import { useLanguage } from '../hooks/useLanguage';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 import '../styles/general.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,7 +24,7 @@ export default function LoginPage() {
       localStorage.setItem('token', data.token);
       navigate('/dashboard');
     } catch (err) {
-      setError('Email o contraseña incorrectos');
+      setError(t('loginError'));
     } finally {
       setLoading(false);
     }
@@ -37,12 +39,12 @@ export default function LoginPage() {
             <Dumbbell size={32} color="white" />
           </div>
           <h1>GymApp</h1>
-          <p>Iniciar sesión</p>
+          <p>{t('loginTitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="auth-card">
-            <label>Email</label>
+            <label>{t('email')}</label>
             <input
               type="email"
               value={email}
@@ -51,13 +53,13 @@ export default function LoginPage() {
               required
               autoFocus
             />
-            <label>Contraseña</label>
+            <label>{t('password')}</label>
             <div className="input-password-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Tu contraseña"
+                placeholder={t('password')}
                 required
               />
               <button
@@ -73,14 +75,14 @@ export default function LoginPage() {
               {loading ? (
                 <span className="btn-spinner">
                   <span className="spinner" />
-                  Entrando...
+                  {t('loginButton')}...
                 </span>
-              ) : 'Entrar'}
+              ) : t('loginButton')}
             </button>
           </div>
         </form>
 
-        <p className="auth-link">¿No tienes cuenta? <Link to="/register">Regístrate</Link></p>
+        <p className="auth-link">{t('dontHaveAccount')} <Link to="/register">{t('registerButton')}</Link></p>
       </div>
     </div>
   );

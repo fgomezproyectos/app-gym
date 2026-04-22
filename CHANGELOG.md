@@ -2,6 +2,92 @@
 
 ---
 
+## 22 de abril de 2026 — Traducción completada (Goal Journal, Workouts, Exercises) + Fixes de separadores y fechas
+
+### Internacionalización completada
+
+**Archivos modificados:**
+- `web/src/services/i18n.js` — agregadas nuevas claves de traducción para todos los 15 idiomas:
+  - `ofCompleted` — separador localizado para "X de Y completados" (de, of, de, de, von, di, из, の, 의, 的, من, z, van, av)
+  - `dateOf` — separador para fechas "día dateOf mes dateOf año"
+  - `last30Days`, `streak`, `consecutiveDays`, `activity`, `less`, `more`, `done`, `rest`, `last30DaysAgo` — para ProgressChart
+  - `muscleGroup`, `description` — para formulario de ejercicios
+  - **Arreglo de sintaxis:** comillas sin cerrar en `loading` property (líneas 187 y 517)
+
+- `web/src/pages/GoalJournalPage.jsx` — 
+  - `formatDate()` ahora usa `t('dateOf')` en lugar de hardcodear "de"
+  - Fechas ahora son completamente reactivas a cambios de idioma
+
+- `web/src/components/ProgressChart.jsx` — traducción completa con `useLanguage` hook:
+  - "Entrenos" → `t('workouts')`
+  - "últimos 30 días" → `t('last30Days')`
+  - "Racha" → `t('streak')`
+  - "días seguidos" → `t('consecutiveDays')`
+  - "Actividad" → `t('activity')`
+  - "Menos/Más" → `t('less')/t('more')`
+  - "Hecho/Descanso" → `t('done')/t('rest')`
+  - "Hace 30 días" → `t('last30DaysAgo')`
+  - Tooltip de días ahora se traduce según idioma
+
+- `web/src/pages/WorkoutsPage.jsx` — traducción completa del formulario de ejercicios:
+  - Placeholders: `t('exerciseName')`, `t('muscleGroup')`, `t('description')`
+  - Botones: `t('cancel')`, `t('save')`
+  - aria-label de botón delete: `t('deleteExercise')`
+
+**Impacto:**
+- **Goal Journal:** Fechas ahora se muestran completamente en el idioma seleccionado (incluyendo separadores "de/of/de/etc")
+- **Historial de Entrenamientos:** Traduce etiquetas y responde en tiempo real a cambios de idioma
+- **Formulario de Ejercicios:** Todos los campos y botones traducidos a 15 idiomas
+- **Reactividad garantizada:** Todos los componentes usan `useLanguage` hook con Context
+
+**Lenguajes completamente soportados:**
+1. 🇪🇸 Español
+2. 🇺🇸 English
+3. 🇵🇹 Português
+4. 🇫🇷 Français
+5. 🇩🇪 Deutsch
+6. 🇮🇹 Italiano
+7. 🇷🇺 Русский
+8. 🇯🇵 日本語
+9. 🇰🇷 한국어
+10. 🇨🇳 中文 (简体)
+11. 🇹🇼 中文 (繁體)
+12. 🇸🇦 العربية
+13. 🇵🇱 Polski
+14. 🇳🇱 Nederlands
+15. 🇸🇪 Svenska
+
+---
+
+## 22 de abril de 2026 — Internacionalización multiidioma (15 idiomas) + Fixes de reactividad
+
+### Sistema de Internacionalización (i18n) implementado
+
+**Archivos nuevos:**
+- `web/src/services/i18n.js` — diccionario centralizado con 15 idiomas (es, en, pt, fr, de, it, ru, ja, ko, zh, zh-TW, ar, pl, nl, sv) + funciones `getLanguage()`, `setLanguage(lang)`, `t(key, lang)`
+- `web/src/context/LanguageContext.jsx` — React Context para manejo global del idioma con listener de eventos `languageChanged`
+- `web/src/hooks/useLanguage.js` — hook refactorizado para usar Context
+
+**Archivos modificados:**
+- `web/src/App.jsx` — envuelto con `<LanguageProvider>` para acceso global al contexto de idiomas
+- `web/src/pages/GoalJournalPage.jsx` — localización completa de fechas (días y meses en 15 idiomas)
+- `web/src/pages/GoalsPage.jsx` — traducción de UI + recargar daily goals al crear/eliminar goal predeterminado (fix KPI)
+- `web/src/pages/ProfilePage.jsx` — fix: `useState(getLanguage)` → `useState(() => getLanguage())` para lazy init correcta
+- `web/src/components/SavedRoutines.jsx` — traducción de UI con hook `useLanguage`
+- `web/src/components/RoutineBuilder.jsx` — traducción de botones y labels con fallback strings
+
+**Nuevas claves de traducción agregadas:**
+- `addExercise`, `saveRoutine` — botones de RoutineBuilder (15 idiomas)
+- `noRoutines`, `pressToCreateRoutine`, `exerciseSingular`, `exercisePlural`, `done`, `deleteRoutine`, `routineName`, `routinePlaceholder`, `exerciseName`, `deleteExercise`, `noExercises`, `pressToAddFirst` — para Workouts (15 idiomas)
+
+**Impacto:**
+- Cambio de idioma ahora es **reactivo en tiempo real** (Context + eventos)
+- Fechas calendario correctamente localizadas en todos los idiomas
+- KPI de Goals se actualiza inmediatamente al crear/eliminar goals predeterminados
+- La app soporta 15 idiomas con fallback a español
+
+---
+
 ## 19 de abril de 2026 — Goals en BD + foto y nombre de perfil editables
 
 ### Goals migrados a PostgreSQL

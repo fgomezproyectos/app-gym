@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Plus, X, Check, Menu } from 'lucide-react';
 import { useSidebar } from '../components/ProtectedLayout';
 import { getMe, getDailyGoals, createDailyGoal, patchDailyGoal, deleteDailyGoal, getDailyStreak } from '../services/api';
+import { useLanguage } from '../hooks/useLanguage';
 import './DashboardPage.css';
 
 // Decodifica el nombre del usuario desde el JWT sin librerías externas
@@ -47,26 +48,49 @@ const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
 export default function DashboardPage() {
   const navigate = useNavigate();
   const openSidebar = useSidebar();
+  const { t } = useLanguage();
   const [name, setName] = useState(getUserName);
   const [avatar, setAvatar] = useState(null);
   const initial = name.charAt(0).toUpperCase();
-
-  const [completedDays] = useState(() => {
-    try {
-      return JSON.parse(localStorage.getItem('gym-completed-days') || '[]');
-    } catch { return []; }
-  });
 
   const [goals, setGoals] = useState([]);
   const [streak, setStreak] = useState(0);
   const [newGoalLabel, setNewGoalLabel] = useState('');
   const [showAddGoal, setShowAddGoal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
-  // Carga inicial: avatar + goals del día + racha
+  // Carga inicial: avatar + goals del día + racha desde BD
   useEffect(() => {
-    getMe().then(data => { if (data?.avatarBase64) setAvatar(data.avatarBase64); }).catch(() => {});
-    getDailyGoals().then(setGoals).catch(() => {});
-    getDailyStreak().then(setStreak).catch(() => {});
+    const loadInitialData = async () => {
+      setIsLoading(true);
+      setHasError(false);
+      try {
+        const [meData, dailyGoals, dailyStreak] = await Promise.allSettled([
+          getMe(),
+          getDailyGoals(),
+          getDailyStreak()
+        ]);
+
+        if (meData.status === 'fulfilled' && meData.value?.avatarBase64) {
+          setAvatar(meData.value.avatarBase64);
+        }
+        if (dailyGoals.status === 'fulfilled') {
+          setGoals(dailyGoals.value);
+        } else {
+          setHasError(true);
+        }
+        if (dailyStreak.status === 'fulfilled') {
+          setStreak(dailyStreak.value);
+        }
+      } catch (error) {
+        setHasError(true);
+        console.error('Error cargando datos del dashboard:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    loadInitialData();
   }, []);
 
   // Escuchar cambios de avatar y nombre desde ProfilePage
@@ -83,8 +107,16 @@ export default function DashboardPage() {
 
   // Recargar goals cuando el Sidebar añade/elimina un default
   useEffect(() => {
-    const handle = () => {
-      getDailyGoals().then(setGoals).catch(() => {});
+    const handle = async () => {
+      try {
+        const fresh = await getDailyGoals();
+        setGoals(fresh);
+        const newStreak = await getDailyStreak();
+        setStreak(newStreak);
+      } catch (error) {
+        console.error('Error recargando goals:', error);
+        setHasError(true);
+      }
     };
     window.addEventListener('defaultGoalsChanged', handle);
     return () => window.removeEventListener('defaultGoalsChanged', handle);
@@ -92,11 +124,6 @@ export default function DashboardPage() {
 
   const weekDays = useMemo(() => getWeekDays(), []);
   const today = getTodayStr();
-
-  const daysThisWeek = useMemo(
-    () => weekDays.filter(d => completedDays.some(c => c.date === d)).length,
-    [weekDays, completedDays]
-  );
 
   const goalsDone = goals.filter(g => g.done).length;
   const goalsTotal = goals.length;
@@ -122,20 +149,39 @@ export default function DashboardPage() {
       setGoals(prev => [...prev, created]);
       setNewGoalLabel('');
       setShowAddGoal(false);
-    } catch { /* ignorar */ }
+    } catch (error) {
+      console.error('Error creando goal:', error);
+      // Recargar desde BD si falla
+      try {
+        const fresh = await getDailyGoals();
+        setGoals(fresh);
+      } catch {
+        setHasError(true);
+      }
+    }
   };
 
   const removeGoal = async (id, isDefault) => {
-    if (isDefault) {
-      // Goals default: no se borran desde aquí, solo se ocultan localmente hasta mañana
-      setGoals(prev => prev.filter(g => g.id !== id));
-      return;
-    }
+    const previousGoals = goals;
     setGoals(prev => prev.filter(g => g.id !== id));
+    
     try {
+      if (isDefault) {
+        // Goals default: no se borran desde aquí, solo se ocultan localmente
+        return;
+      }
+      // Intentar borrar desde la API
       await deleteDailyGoal(id);
-    } catch {
-      getDailyGoals().then(setGoals).catch(() => {});
+    } catch (error) {
+      console.error('Error borrando goal:', error);
+      // Revertir y recargar desde BD
+      setGoals(previousGoals);
+      try {
+        const fresh = await getDailyGoals();
+        setGoals(fresh);
+      } catch {
+        setHasError(true);
+      }
     }
   };
 
@@ -155,71 +201,74 @@ export default function DashboardPage() {
             }
           </div>
           <div className="dash-greeting">
-            <span className="dash-hello">Hola,</span>
+            <span className="dash-hello">{t('hello')}</span>
             <span className="dash-name">{name}</span>
           </div>
-          <button className="dash-menu-btn" onClick={(e) => { e.stopPropagation(); openSidebar(); }} aria-label="Abrir menú">
+          <button className="dash-menu-btn" onClick={(e) => { e.stopPropagation(); openSidebar(); }} aria-label={t('logout')}>
             <Menu size={20} />
           </button>
         </div>
 
-        <h1 className="dash-title">Tu resumen<br />de hoy</h1>
+        <h1 className="dash-title">{t('yourSummaryToday')}</h1>
+
+        {/* ── Loading / Error states ── */}
+        {isLoading && (
+          <div style={{ textAlign: 'center', padding: '2rem', opacity: 0.6 }}>
+            <p>{t('loading')}</p>
+          </div>
+        )}
+        
+        {hasError && !isLoading && (
+          <div style={{ 
+            padding: '1rem', 
+            backgroundColor: '#fee', 
+            border: '1px solid #f99', 
+            borderRadius: '8px', 
+            marginBottom: '1rem' 
+          }}>
+            <p style={{ color: '#c33', margin: 0 }}>
+              ⚠️ {t('errorLoading')}
+            </p>
+          </div>
+        )}
 
         {/* ── Stats rápidas ── */}
-        <div className="dash-stats">
-          <div className="dash-stat-card stat-days">
-            <span className="dash-stat-value">{daysThisWeek}</span>
-            <span className="dash-stat-label">Entrenos esta semana</span>
+        {!isLoading && (
+          <div className="dash-stats">
+            <div className="dash-stat-card stat-streak">
+              <span className="dash-stat-value">{streak}</span>
+              <span className="dash-stat-label">{t('streakDays')}</span>
+            </div>
+            <div className="dash-stat-card stat-goals">
+              <span className="dash-stat-value">
+                {goalsTotal === 0 ? t('noGoals') : `${goalsDone}/${goalsTotal}`}
+              </span>
+              <span className="dash-stat-label">{t('goalsToday')}</span>
+            </div>
+            <div className="dash-stat-card stat-pct">
+              <span className="dash-stat-value">{progressPct}%</span>
+              <span className="dash-stat-label">{t('progress')}</span>
+            </div>
           </div>
-          <div className="dash-stat-card stat-streak">
-            <span className="dash-stat-value">{streak}</span>
-            <span className="dash-stat-label">Racha (goals)</span>
-          </div>
-          <div className="dash-stat-card stat-goals">
-            <span className="dash-stat-value">
-              {goalsTotal === 0 ? 'Sin' : `${goalsDone}/${goalsTotal}`}
-            </span>
-            <span className="dash-stat-label">Goals hoy</span>
-          </div>
-        </div>
-
-        {/* ── Esta semana ── */}
-        <section className="dash-section">
-          <h2 className="dash-section-title">Esta semana</h2>
-          <div className="week-grid">
-            {weekDays.map((date, i) => {
-              const done = completedDays.some(c => c.date === date);
-              const isToday = date === today;
-              return (
-                <div
-                  key={date}
-                  className={`week-cell${done ? ' done' : ''}${isToday ? ' is-today' : ''}`}
-                >
-                  <span className="week-day-label">{DAYS_SHORT[i]}</span>
-                  <div className="week-dot" />
-                </div>
-              );
-            })}
-          </div>
-        </section>
+        )}
 
         {/* ── Daily Goals ── */}
         <section className="dash-section">
           <div className="dash-section-row">
             <div>
               <h2 className="dash-section-title" style={{ marginBottom: 0 }}>
-                Daily Goals
+                {t('dailyGoals')}
               </h2>
               {goalsTotal === 0 && (
                 <p className="goals-setup-hint">
-                  Configura tus goals desde el menú lateral → para que aparezcan aquí cada día.
+                  {t('setupHint')}
                 </p>
               )}
             </div>
             <button
               className="btn-icon-round"
               onClick={() => setShowAddGoal(v => !v)}
-              aria-label="Añadir objetivo puntual"
+              aria-label={t('addGoal')}
             >
               <Plus size={16} />
             </button>
@@ -234,7 +283,7 @@ export default function DashboardPage() {
                 />
               </div>
               <span className="goals-progress-label">
-                {goalsDone} de {goalsTotal} completados · {progressPct}%
+                {goalsDone} de {goalsTotal} {t('completed')} · {progressPct}%
               </span>
             </div>
           )}
@@ -245,7 +294,7 @@ export default function DashboardPage() {
                 type="text"
                 value={newGoalLabel}
                 onChange={e => setNewGoalLabel(e.target.value)}
-                placeholder="Goal puntual para hoy..."
+                placeholder={t('addGoalToday')}
                 className="add-goal-input"
                 onKeyDown={e => e.key === 'Enter' && addGoal()}
                 autoFocus
@@ -253,7 +302,7 @@ export default function DashboardPage() {
               <button
                 className="btn-confirm-goal"
                 onClick={addGoal}
-                aria-label="Confirmar objetivo"
+                aria-label={t('confirm')}
               >
                 <Check size={16} />
               </button>
@@ -266,7 +315,7 @@ export default function DashboardPage() {
                 <button
                   className={`goal-checkbox${g.done ? ' checked' : ''}`}
                   onClick={() => toggleGoal(g.id, g.done)}
-                  aria-label={g.done ? 'Marcar como pendiente' : 'Marcar como hecho'}
+                  aria-label={g.done ? t('unmark') : t('mark')}
                 >
                   {g.done && <Check size={13} />}
                 </button>
@@ -274,8 +323,8 @@ export default function DashboardPage() {
                 <button
                   className="goal-remove"
                   onClick={() => removeGoal(g.id, g.isDefault)}
-                  aria-label={g.isDefault ? 'Saltar hoy' : 'Eliminar objetivo'}
-                  title={g.isDefault ? 'Saltar hoy (reaparecerá mañana)' : 'Eliminar'}
+                  aria-label={g.isDefault ? t('mark') : t('delete')}
+                  title={g.isDefault ? t('mark') : t('delete')}
                 >
                   <X size={14} />
                 </button>

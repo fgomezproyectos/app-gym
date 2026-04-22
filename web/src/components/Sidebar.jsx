@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Dumbbell, X, LogOut, Moon, Sun, BookOpen, Target } from 'lucide-react';
 import { getMe } from '../services/api';
+import { useLanguage } from '../hooks/useLanguage';
 import './Sidebar.css';
 
 function getUserName() {
@@ -41,6 +42,7 @@ function getEmail() {
 
 export function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [name, setName] = useState(getUserName);
   const email = getEmail();
   const initial = name.charAt(0).toUpperCase();
@@ -96,7 +98,7 @@ export function Sidebar({ isOpen, onClose }) {
         <button 
           className="sidebar-header sidebar-header-btn"
           onClick={() => { navigate('/profile'); onClose(); }}
-          aria-label="Ir al perfil"
+          aria-label={t('profile')}
         >
           <div className="sidebar-user-info">
             <div className="sidebar-avatar">
@@ -113,7 +115,7 @@ export function Sidebar({ isOpen, onClose }) {
           <button 
             className="sidebar-close" 
             onClick={(e) => { e.stopPropagation(); onClose(); }}
-            aria-label="Cerrar menú"
+            aria-label={t('close')}
           >
             <X size={18} />
           </button>
@@ -127,7 +129,7 @@ export function Sidebar({ isOpen, onClose }) {
             onClick={onClose}
           >
             <Home size={18} />
-            Inicio
+            {t('home')}
           </NavLink>
           <NavLink
             to="/workouts"
@@ -135,7 +137,7 @@ export function Sidebar({ isOpen, onClose }) {
             onClick={onClose}
           >
             <Dumbbell size={18} />
-            Entrenos
+            {t('workouts')}
           </NavLink>
           <NavLink
             to="/goals"
@@ -143,7 +145,7 @@ export function Sidebar({ isOpen, onClose }) {
             onClick={onClose}
           >
             <Target size={18} />
-            Goals
+            {t('goals')}
           </NavLink>
           <NavLink
             to="/goal-journal"
@@ -151,7 +153,7 @@ export function Sidebar({ isOpen, onClose }) {
             onClick={onClose}
           >
             <BookOpen size={18} />
-            Diario de Goals
+            {t('history')}
           </NavLink>
         </nav>
 
@@ -161,13 +163,13 @@ export function Sidebar({ isOpen, onClose }) {
         <div className="sidebar-footer">
           <button className="sidebar-theme-btn" onClick={toggleTheme}>
             {isDark
-              ? <><Sun size={16} /> Modo claro</>
-              : <><Moon size={16} /> Modo oscuro</>
+              ? <><Sun size={16} /> {t('lightMode')}</>
+              : <><Moon size={16} /> {t('darkMode')}</>
             }
           </button>
           <button className="sidebar-logout-btn" onClick={handleLogout}>
             <LogOut size={16} />
-            Cerrar sesión
+            {t('logout')}
           </button>
         </div>
 

@@ -5,17 +5,19 @@ import { RoutineBuilder } from '../components/RoutineBuilder';
 import { SavedRoutines } from '../components/SavedRoutines';
 import { ProgressChart } from '../components/ProgressChart';
 import { useSidebar } from '../components/ProtectedLayout';
+import { useLanguage } from '../hooks/useLanguage';
 import './WorkoutsPage.css';
 import '../styles/general.css';
 
-const TABS = [
-  { key: 'rutinas', label: 'Mis Rutinas' },
-  { key: 'historial', label: 'Historial' },
-  { key: 'ejercicios', label: 'Ejercicios' },
+const TABS_CONFIG = [
+  { key: 'rutinas', labelKey: 'myRoutines' },
+  { key: 'historial', labelKey: 'history' },
+  { key: 'ejercicios', labelKey: 'exercises' },
 ];
 
 export default function WorkoutsPage() {
   const openSidebar = useSidebar();
+  const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState('rutinas');
 
   // — Rutinas —
@@ -79,21 +81,21 @@ export default function WorkoutsPage() {
     <div className="workouts-page">
       <div className="workouts-inner">
         <div className="workouts-title-row">
-          <h1 className="workouts-title">Entrenos</h1>
-          <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
+          <h1 className="workouts-title">{t('workouts')}</h1>
+          <button className="btn-menu-trigger" onClick={openSidebar} aria-label={t('logout')}>
             <Menu size={22} />
           </button>
         </div>
 
         {/* ── Tabs ── */}
         <div className="tabs-row">
-          {TABS.map(tab => (
+          {TABS_CONFIG.map(tab => (
             <button
               key={tab.key}
               className={`tab-btn${activeTab === tab.key ? ' active' : ''}`}
               onClick={() => setActiveTab(tab.key)}
             >
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           ))}
         </div>
@@ -124,7 +126,7 @@ export default function WorkoutsPage() {
               <div className="ex-form-card">
                 <input
                   type="text"
-                  placeholder="Nombre *"
+                  placeholder={t('exerciseName') + ' *'}
                   value={exForm.name}
                   onChange={e => setExForm(p => ({ ...p, name: e.target.value }))}
                   className="form-input"
@@ -132,14 +134,14 @@ export default function WorkoutsPage() {
                 />
                 <input
                   type="text"
-                  placeholder="Grupo muscular"
+                  placeholder={t('muscleGroup')}
                   value={exForm.muscleGroup}
                   onChange={e => setExForm(p => ({ ...p, muscleGroup: e.target.value }))}
                   className="form-input"
                 />
                 <input
                   type="text"
-                  placeholder="Descripción"
+                  placeholder={t('description')}
                   value={exForm.description}
                   onChange={e => setExForm(p => ({ ...p, description: e.target.value }))}
                   className="form-input"
@@ -152,10 +154,10 @@ export default function WorkoutsPage() {
                       setExForm({ name: '', muscleGroup: '', description: '' });
                     }}
                   >
-                    Cancelar
+                    {t('cancel')}
                   </button>
                   <button className="ex-btn-save" onClick={handleSaveExercise}>
-                    Guardar
+                    {t('save')}
                   </button>
                 </div>
               </div>
@@ -166,8 +168,8 @@ export default function WorkoutsPage() {
                 <div className="empty-icon">
                   <Dumbbell size={24} />
                 </div>
-                <p>Sin ejercicios todavía</p>
-                <p>Pulsa + para añadir tu primero</p>
+                <p>{t('noExercises') || 'Sin ejercicios todavía'}</p>
+                <p>{t('pressToAddFirst') || 'Pulsa + para añadir tu primero'}</p>
               </div>
             )}
 
@@ -183,7 +185,7 @@ export default function WorkoutsPage() {
                   <button
                     className="btn-delete"
                     onClick={() => handleDeleteExercise(ex.id)}
-                    aria-label="Eliminar ejercicio"
+                    aria-label={t('deleteExercise')}
                   >
                     <Trash2 size={16} />
                   </button>

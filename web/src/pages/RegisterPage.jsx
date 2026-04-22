@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Eye, EyeOff, Dumbbell } from 'lucide-react';
 import { register } from '../services/api';
+import { useLanguage } from '../hooks/useLanguage';
 import { AnimatedBackground } from '../components/AnimatedBackground';
 import '../styles/general.css';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,7 +24,7 @@ export default function RegisterPage() {
       await register(name, email, password);
       navigate('/login');
     } catch (err) {
-      setError(err.message || 'No se pudo crear la cuenta.');
+      setError(err.message || t('error'));
     } finally {
       setLoading(false);
     }
@@ -37,21 +39,21 @@ export default function RegisterPage() {
             <Dumbbell size={32} color="white" />
           </div>
           <h1>GymApp</h1>
-          <p>Crear cuenta</p>
+          <p>{t('registerTitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit}>
           <div className="auth-card">
-            <label>Nombre</label>
+            <label>{t('name')}</label>
             <input
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
-              placeholder="Tu nombre"
+              placeholder={t('name')}
               required
               autoFocus
             />
-            <label>Email</label>
+            <label>{t('email')}</label>
             <input
               type="email"
               value={email}
@@ -59,13 +61,13 @@ export default function RegisterPage() {
               placeholder="tu@email.com"
               required
             />
-            <label>Contraseña</label>
+            <label>{t('password')}</label>
             <div className="input-password-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                placeholder="Tu contraseña"
+                placeholder={t('password')}
                 required
               />
               <button
@@ -81,14 +83,14 @@ export default function RegisterPage() {
               {loading ? (
                 <span className="btn-spinner">
                   <span className="spinner" />
-                  Creando cuenta...
+                  {t('registerButton')}...
                 </span>
-              ) : 'Registrarse'}
+              ) : t('registerButton')}
             </button>
           </div>
         </form>
 
-        <p className="auth-link">¿Ya tienes cuenta? <Link to="/login">Inicia sesión</Link></p>
+        <p className="auth-link">{t('alreadyHaveAccount')} <Link to="/login">{t('loginButton')}</Link></p>
       </div>
     </div>
   );

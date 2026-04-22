@@ -1,7 +1,9 @@
 // SavedRoutines.jsx — Usado en: WorkoutsPage
 import { Trash2, Check, Dumbbell } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
 
 export function SavedRoutines({ routines, completedDays, onDelete, onMarkDone }) {
+  const { t } = useLanguage();
   const today = new Date().toISOString().split('T')[0];
 
   const isCompletedToday = (routineId) =>
@@ -13,8 +15,8 @@ export function SavedRoutines({ routines, completedDays, onDelete, onMarkDone })
         <div className="empty-icon">
           <Dumbbell size={24} />
         </div>
-        <p>Sin rutinas todavía</p>
-        <p>Pulsa + para crear tu primera rutina</p>
+        <p>{t('noRoutines') || 'Sin rutinas todavía'}</p>
+        <p>{t('pressToCreateRoutine') || 'Pulsa + para crear tu primera rutina'}</p>
       </div>
     );
   }
@@ -28,12 +30,12 @@ export function SavedRoutines({ routines, completedDays, onDelete, onMarkDone })
             <div className="routine-card-header">
               <div>
                 <h3>{routine.name}</h3>
-                <p>{routine.exercises.length} ejercicio{routine.exercises.length !== 1 ? 's' : ''}</p>
+                <p>{routine.exercises.length} {routine.exercises.length === 1 ? t('exerciseSingular') || 'ejercicio' : t('exercisePlural') || 'ejercicios'}</p>
               </div>
               {completed && (
                 <span className="badge-done">
                   <Check size={12} />
-                  Hecho
+                  {t('done') || 'Hecho'}
                 </span>
               )}
             </div>
@@ -57,12 +59,12 @@ export function SavedRoutines({ routines, completedDays, onDelete, onMarkDone })
                 className="btn-mark-done"
               >
                 <Check size={16} />
-                {completed ? 'Completada' : 'Marcar como hecha'}
+                {completed ? (t('completed') || 'Completada') : (t('markAsCompleted') || 'Marcar como hecha')}
               </button>
               <button
                 onClick={() => onDelete(routine.id)}
                 className="btn-delete"
-                aria-label="Eliminar rutina"
+                aria-label={t('deleteRoutine') || 'Eliminar rutina'}
               >
                 <Trash2 size={18} />
               </button>

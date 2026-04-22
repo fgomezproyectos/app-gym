@@ -2,11 +2,13 @@ import { useState, useEffect } from 'react';
 import { Plus, Trash2, Target, Check, Menu } from 'lucide-react';
 import { getGoals, createGoal, deleteGoal, getDailyGoals, markDailyGoal } from '../services/api';
 import { useSidebar } from '../components/ProtectedLayout';
+import { useLanguage } from '../hooks/useLanguage';
 import './GoalsPage.css';
 import '../styles/general.css';
 
 export default function GoalsPage() {
   const openSidebar = useSidebar();
+  const { t } = useLanguage();
   const [goals, setGoals] = useState([]);
   const [dailyGoals, setDailyGoals] = useState([]);
   const [newLabel, setNewLabel] = useState('');
@@ -44,6 +46,9 @@ export default function GoalsPage() {
       const created = await createGoal(newLabel.trim());
       setGoals(prev => [...prev, created]);
       setNewLabel('');
+      // Recargar goals de hoy para que se actualice el KPI
+      const dailyData = await getDailyGoals(new Date().toISOString().split('T')[0]);
+      setDailyGoals(dailyData || []);
     } catch (err) {
       setError('Error creando goal');
     }
@@ -53,6 +58,9 @@ export default function GoalsPage() {
     try {
       await deleteGoal(id);
       setGoals(prev => prev.filter(g => g.id !== id));
+      // Recargar goals de hoy para que se actualice el KPI
+      const dailyData = await getDailyGoals(new Date().toISOString().split('T')[0]);
+      setDailyGoals(dailyData || []);
     } catch (err) {
       setError('Error eliminando goal');
     }
@@ -78,9 +86,9 @@ export default function GoalsPage() {
       <div className="goals-header">
         <div className="goals-title-section">
           <Target size={24} />
-          <h1>Gestión de Goals</h1>
+          <h1>{t('goalsManagement')}</h1>
         </div>
-        <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
+        <button className="btn-menu-trigger" onClick={openSidebar} aria-label={t('openMenu')}>
           <Menu size={22} />
         </button>
       </div>
@@ -92,32 +100,32 @@ export default function GoalsPage() {
           className={`goals-tab ${activeTab === 'manage' ? 'active' : ''}`}
           onClick={() => setActiveTab('manage')}
         >
-          Gestionar Goals
+          {t('manageGoals')}
         </button>
         <button
           className={`goals-tab ${activeTab === 'today' ? 'active' : ''}`}
           onClick={() => setActiveTab('today')}
         >
-          Goals de Hoy ({totalCount === 0 ? 'Sin' : `${completedCount}/${totalCount}`})
+          {t('todaysGoals')} ({totalCount === 0 ? t('none') : `${completedCount}/${totalCount}`})
         </button>
       </div>
 
       {loading ? (
-        <div className="goals-loading">Cargando...</div>
+        <div className="goals-loading">{t('loading')}</div>
       ) : activeTab === 'manage' ? (
         <div className="goals-manage-section">
           <div className="goals-manage-header">
             <div>
-              <h2>Goals predeterminados ({goals.length})</h2>
+              <h2>{t('defaultGoals')} ({goals.length})</h2>
               <p className="goals-manage-hint">
-                Los goals que crees aquí aparecerán automáticamente cada día
+                {t('goalsCreatedHereAppearDaily')}
               </p>
             </div>
             <button
               className="btn-add-goal-manage"
               onClick={() => setShowAddGoal(v => !v)}
-              aria-label="Agregar nuevo goal"
-              title="Agregar nuevo goal"
+              aria-label={t('addNewGoal')}
+              title={t('addNewGoal')}
             >
               <Plus size={20} />
             </button>
@@ -127,7 +135,7 @@ export default function GoalsPage() {
             <div className="goals-manage-add-row">
               <input
                 type="text"
-                placeholder="Ej: Beber 2L de agua, 30min de ejercicio..."
+                placeholder={t('goalPlaceholder')}
                 value={newLabel}
                 onChange={e => setNewLabel(e.target.value)}
                 className="goals-manage-add-input"
@@ -138,7 +146,7 @@ export default function GoalsPage() {
                 className="goals-manage-add-btn"
                 onClick={handleCreateGoal}
                 disabled={!newLabel.trim()}
-                aria-label="Confirmar"
+                aria-label={t('confirm')}
               >
                 <Check size={16} />
               </button>
@@ -148,14 +156,14 @@ export default function GoalsPage() {
           {goals.length > 0 && (
             <div className="goals-manage-progress-wrap">
               <span className="goals-manage-progress-label">
-                {goals.length} goal{goals.length !== 1 ? 's' : ''} configurado{goals.length !== 1 ? 's' : ''}
+                {goals.length} {goals.length === 1 ? t('goalSingular') : t('goalPlural')} {goals.length === 1 ? t('configuredSingular') : t('configuredPlural')}
               </span>
             </div>
           )}
 
           {goals.length === 0 ? (
             <p className="goals-manage-empty">
-              No tienes goals predeterminados. ¡Crea uno para empezar!
+              {t('noDefaultGoals')}
             </p>
           ) : (
             <div className="goals-manage-list">
@@ -168,7 +176,7 @@ export default function GoalsPage() {
                   <button
                     className="goals-manage-item-delete"
                     onClick={() => handleDeleteGoal(goal.id)}
-                    title="Eliminar goal"
+                    title={t('deleteGoal')}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -180,7 +188,7 @@ export default function GoalsPage() {
       ) : (
         <div className="goals-today-section">
           <div className="goals-today-header">
-            <h2>Goals de hoy</h2>
+            <h2>{t('todaysGoals')}</h2>
             <div className="goals-progress">
               <div className="goals-progress-ring">
                 <svg viewBox="0 0 100 100">
@@ -205,7 +213,7 @@ export default function GoalsPage() {
 
           {totalCount === 0 ? (
             <p className="goals-empty">
-              Sin goals para hoy. Crea goals predeterminados para que aparezcan aquí.
+              {t('noGoalsForToday')}
             </p>
           ) : (
             <div className="goals-today-list">
@@ -214,7 +222,7 @@ export default function GoalsPage() {
                   <button
                     className="goals-today-checkbox"
                     onClick={() => handleToggleDailyGoal(goal.id)}
-                    title={goal.done ? 'Marcar como no completado' : 'Marcar como completado'}
+                    title={goal.done ? t('markAsNotCompleted') : t('markAsCompleted')}
                   >
                     {goal.done && <Check size={20} />}
                   </button>

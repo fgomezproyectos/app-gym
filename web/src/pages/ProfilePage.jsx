@@ -1,9 +1,11 @@
-// ProfilePage.jsx — Ruta: /profile (protegida). Foto de perfil + cambio de nombre.
+// ProfilePage.jsx — Ruta: /profile (protegida). Foto de perfil + cambio de nombre + selección de idioma.
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Camera, Menu, Check, X, Pencil, Target } from 'lucide-react';
+import { LogOut, Camera, Menu, Check, X, Pencil, Target, Globe } from 'lucide-react';
 import { useSidebar } from '../components/ProtectedLayout';
 import { getMe, updateAvatar, updateName, getGoals } from '../services/api';
+import { getLanguage, LANGUAGES } from '../services/i18n';
+import { useLanguage } from '../hooks/useLanguage';
 import './ProfilePage.css';
 import '../styles/general.css';
 
@@ -35,6 +37,7 @@ export default function ProfilePage() {
   const openSidebar = useSidebar();
   const fileInputRef = useRef(null);
 
+  const { language, setLanguage, t } = useLanguage();
   const [profile, setProfile] = useState(null);   // { name, email, avatarBase64 }
   const [loading, setLoading] = useState(true);
   const [avatarUploading, setAvatarUploading] = useState(false);
@@ -80,7 +83,10 @@ export default function ProfilePage() {
   };
 
   const handleSaveName = async () => {
-    if (!nameValue.trim()) { setNameError('El nombre no puede estar vacío.'); return; }
+    if (!nameValue.trim()) { 
+      setNameError(t('emptyNameError')); 
+      return; 
+    }
     try {
       setNameSaving(true);
       setNameError('');
@@ -90,7 +96,7 @@ export default function ProfilePage() {
       setEditingName(false);
       window.dispatchEvent(new CustomEvent('nameChanged', { detail: nameValue.trim() }));
     } catch (err) {
-      setNameError(err.message || 'Error al guardar el nombre.');
+      setNameError(err.message || t('saveNameError'));
     } finally {
       setNameSaving(false);
     }
@@ -109,7 +115,7 @@ export default function ProfilePage() {
 
         {/* Header */}
         <div className="profile-title-row">
-          <h1 className="profile-title">Perfil</h1>
+          <h1 className="profile-title">{t('profileTitle')}</h1>
           <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
             <Menu size={22} />
           </button>
@@ -123,7 +129,7 @@ export default function ProfilePage() {
             <button
               className="profile-avatar-btn"
               onClick={() => fileInputRef.current?.click()}
-              aria-label="Cambiar foto de perfil"
+              aria-label={t('changeProfilePhoto')}
               disabled={avatarUploading}
             >
               {profile?.avatarBase64
@@ -156,17 +162,17 @@ export default function ProfilePage() {
                   autoFocus
                   maxLength={50}
                 />
-                <button className="profile-name-action confirm" onClick={handleSaveName} disabled={nameSaving} aria-label="Confirmar">
+                <button className="profile-name-action confirm" onClick={handleSaveName} disabled={nameSaving} aria-label={t('confirm')}>
                   <Check size={16} />
                 </button>
-                <button className="profile-name-action cancel" onClick={() => { setEditingName(false); setNameValue(profile?.name ?? ''); setNameError(''); }} aria-label="Cancelar">
+                <button className="profile-name-action cancel" onClick={() => { setEditingName(false); setNameValue(profile?.name ?? ''); setNameError(''); }} aria-label={t('cancel', language)}>
                   <X size={16} />
                 </button>
               </>
             ) : (
               <>
                 <span className="profile-name-text">{profile?.name ?? '—'}</span>
-                <button className="profile-name-action edit" onClick={() => setEditingName(true)} aria-label="Editar nombre">
+                <button className="profile-name-action edit" onClick={() => setEditingName(true)} aria-label={t('editName')}>
                   <Pencil size={14} />
                 </button>
               </>
@@ -181,10 +187,10 @@ export default function ProfilePage() {
         <div className="profile-goals-section">
           <div className="profile-goals-header">
             <Target size={20} />
-            <h2 className="profile-goals-title">Tus Goals Configurados</h2>
+            <h2 className="profile-goals-title">{t('yourConfiguredGoals')}</h2>
           </div>
           {goals.length === 0 ? (
-            <p className="profile-goals-empty">Sin goals configurados</p>
+            <p className="profile-goals-empty">{t('noGoalsConfigured')}</p>
           ) : (
             <div className="profile-goals-list">
               {goals.map(goal => (
@@ -192,15 +198,36 @@ export default function ProfilePage() {
                   <span className="profile-goal-label">{goal.label}</span>
                 </div>
               ))}
-              <p className="profile-goals-count">{goals.length} goal{goals.length !== 1 ? 's' : ''} configurado{goals.length !== 1 ? 's' : ''}</p>
+              <p className="profile-goals-count">
+                {goals.length} {goals.length !== 1 ? t('goals') : t('goal')} {t('goalsConfigured').split('goal(s)')[1]}
+              </p>
             </div>
           )}
+        </div>
+
+        {/* Selector de idioma */}
+        <div className="profile-language-section">
+          <div className="profile-language-header">
+            <Globe size={20} />
+            <h2 className="profile-language-title">{t('language')}</h2>
+          </div>
+          <select 
+            className="profile-language-select"
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            {Object.entries(LANGUAGES).map(([code, label]) => (
+              <option key={code} value={code}>
+                {label}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Cerrar sesión */}
         <button className="btn-logout-profile" onClick={handleLogout}>
           <LogOut size={18} />
-          Cerrar sesión
+          {t('logout')}
         </button>
 
       </div>

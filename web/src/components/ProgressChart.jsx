@@ -1,8 +1,10 @@
 // ProgressChart.jsx — Usado en: WorkoutsPage
 import { useMemo } from 'react';
 import { Flame, Activity } from 'lucide-react';
+import { useLanguage } from '../hooks/useLanguage';
 
 export function ProgressChart({ completedDays }) {
+  const { t } = useLanguage();
   const last30Days = useMemo(() => {
     const days = [];
     const today = new Date();
@@ -34,33 +36,33 @@ export function ProgressChart({ completedDays }) {
         <div className="stat-card">
           <div className="stat-label">
             <Activity size={14} />
-            Entrenos
+            {t('workouts')}
           </div>
           <p className="stat-value">{completedCount}</p>
-          <p className="stat-sublabel">últimos 30 días</p>
+          <p className="stat-sublabel">{t('last30Days')}</p>
         </div>
         <div className="stat-card">
           <div className="stat-label" style={{ color: '#22c55e' }}>
             <Flame size={14} />
-            Racha
+            {t('streak')}
           </div>
           <p className="stat-value">{currentStreak}</p>
-          <p className="stat-sublabel">días seguidos</p>
+          <p className="stat-sublabel">{t('consecutiveDays')}</p>
         </div>
       </div>
 
       <div className="activity-card">
         <div className="activity-card-header">
-          <h2>Actividad</h2>
+          <h2>{t('activity')}</h2>
           <div className="activity-legend">
-            <span>Menos</span>
+            <span>{t('less')}</span>
             <div className="legend-squares">
               <div className="legend-sq empty" />
               <div className="legend-sq done" style={{ opacity: 0.4 }} />
               <div className="legend-sq done" style={{ opacity: 0.7 }} />
               <div className="legend-sq done" />
             </div>
-            <span>Más</span>
+            <span>{t('more')}</span>
           </div>
         </div>
 
@@ -69,14 +71,14 @@ export function ProgressChart({ completedDays }) {
             <div
               key={day.date}
               className={`heatmap-day${day.completed ? ' done' : ''}`}
-              title={`${day.dayOfMonth} — ${day.completed ? 'Hecho' : 'Descanso'}`}
+              title={`${day.dayOfMonth} — ${day.completed ? t('done') : t('rest')}`}
             />
           ))}
         </div>
 
         <div className="heatmap-labels">
-          <span>Hace 30 días</span>
-          <span>Hoy</span>
+          <span>{t('last30DaysAgo')}</span>
+          <span>{t('today')}</span>
         </div>
       </div>
     </section>

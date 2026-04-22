@@ -312,3 +312,95 @@
 [data-theme="dark"] .profile-goal-item            { background: #2e3044; border-color: #3a3d56; color: #a8afc0; }
 [data-theme="dark"] .profile-goal-label           { color: #eaeaea; }
 [data-theme="dark"] .profile-goals-count          { color: #5a5f7a; }
+
+/* ── Language Section ── */
+.profile-language-section {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-language-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.profile-language-header svg {
+  color: #4f8ef7;
+  flex-shrink: 0;
+}
+
+.profile-language-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1b1f3a;
+  margin: 0;
+}
+
+.profile-language-options {
+  display: none;
+}
+
+.profile-language-btn {
+  display: none;
+}
+
+.profile-language-select {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1.5px solid #e5e7eb;
+  background: #f9fafb;
+  color: #374151;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent;
+  font-family: inherit;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.profile-language-select:hover {
+  background-color: #f3f4f6;
+  border-color: #d1d5db;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.5em 1.5em;
+}
+
+.profile-language-select:focus,
+.profile-language-select:focus-visible {
+  outline: none;
+  background-color: #f3f4f6;
+  border-color: #4f8ef7;
+  box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.1);
+}
+
+.profile-language-select option {
+  background: #ffffff;
+  color: #374151;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.6;
+  margin: 0.25rem 0;
+}
+
+[data-theme="dark"] .profile-language-section     { background: #1a1b23; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+[data-theme="dark"] .profile-language-title      { color: #eaeaea; }
+[data-theme="dark"] .profile-language-select     { background-color: #2e3044; border-color: #3a3d56; color: #eaeaea; }
+[data-theme="dark"] .profile-language-select:hover { background-color: #3a3d56; border-color: #4a4f6a; }
+[data-theme="dark"] .profile-language-select:focus,
+[data-theme="dark"] .profile-language-select:focus-visible { background-color: #3a3d56; border-color: #4f8ef7; box-shadow: 0 0 0 3px rgba(79, 142, 247, 0.2); }
+[data-theme="dark"] .profile-language-select option { background: #2e3044; color: #eaeaea; padding: 0.75rem 1rem; }

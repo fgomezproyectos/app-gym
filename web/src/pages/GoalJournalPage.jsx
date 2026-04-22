@@ -2,23 +2,99 @@ import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, BookOpen, Calendar, Grid3x3, Menu } from 'lucide-react';
 import { getDailyGoalsByDateRange } from '../services/api';
 import { useSidebar } from '../components/ProtectedLayout';
+import { useLanguage } from '../hooks/useLanguage';
 import './GoalJournalPage.css';
 import '../styles/general.css';
 
 const DAYS_SHORT = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
-const DAYS_FULL = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
-const MONTHS = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
 
-// Formatea una fecha a "YYYY-MM-DD" en zona horaria local (sin conversión a UTC)
-function toLocalDateString(date) {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
-}
+// Función para obtener nombres de días y meses según el idioma
+const getLocalizedDateData = (language) => {
+  const dateFormatMap = {
+    es: {
+      daysShort: ['L', 'M', 'X', 'J', 'V', 'S', 'D'],
+      daysFull: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+      months: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    },
+    en: {
+      daysShort: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+      daysFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      months: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    },
+    de: {
+      daysShort: ['M', 'D', 'M', 'D', 'F', 'S', 'S'],
+      daysFull: ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'],
+      months: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+    },
+    pt: {
+      daysShort: ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'],
+      daysFull: ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'],
+      months: ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+    },
+    fr: {
+      daysShort: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+      daysFull: ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'],
+      months: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+    },
+    it: {
+      daysShort: ['L', 'M', 'M', 'G', 'V', 'S', 'D'],
+      daysFull: ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'],
+      months: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre']
+    },
+    ru: {
+      daysShort: ['П', 'В', 'С', 'Ч', 'П', 'С', 'В'],
+      daysFull: ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'],
+      months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь']
+    },
+    ja: {
+      daysShort: ['月', '火', '水', '木', '金', '土', '日'],
+      daysFull: ['月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日', '日曜日'],
+      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    ko: {
+      daysShort: ['월', '화', '수', '목', '금', '토', '일'],
+      daysFull: ['월요일', '화요일', '수요일', '목요일', '금요일', '토요일', '일요일'],
+      months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월']
+    },
+    zh: {
+      daysShort: ['一', '二', '三', '四', '五', '六', '日'],
+      daysFull: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    'zh-TW': {
+      daysShort: ['一', '二', '三', '四', '五', '六', '日'],
+      daysFull: ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'],
+      months: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+    },
+    ar: {
+      daysShort: ['ن', 'ث', 'ع', 'خ', 'ج', 'س', 'أ'],
+      daysFull: ['الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت', 'الأحد'],
+      months: ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر']
+    },
+    pl: {
+      daysShort: ['P', 'W', 'Ś', 'C', 'P', 'S', 'N'],
+      daysFull: ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota', 'Niedziela'],
+      months: ['Styczeń', 'Luty', 'Marzec', 'Kwiecień', 'Maj', 'Czerwiec', 'Lipiec', 'Sierpień', 'Wrzesień', 'Październik', 'Listopad', 'Grudzień']
+    },
+    nl: {
+      daysShort: ['M', 'D', 'W', 'D', 'V', 'Z', 'Z'],
+      daysFull: ['Maandag', 'Dinsdag', 'Woensdag', 'Donderdag', 'Vrijdag', 'Zaterdag', 'Zondag'],
+      months: ['Januari', 'Februari', 'Maart', 'April', 'Mei', 'Juni', 'Juli', 'Augustus', 'September', 'Oktober', 'November', 'December']
+    },
+    sv: {
+      daysShort: ['M', 'T', 'O', 'T', 'F', 'L', 'S'],
+      daysFull: ['Måndag', 'Tisdag', 'Onsdag', 'Torsdag', 'Fredag', 'Lördag', 'Söndag'],
+      months: ['Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni', 'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December']
+    }
+  };
+  return dateFormatMap[language] || dateFormatMap.es;
+};
 
 export default function GoalJournalPage() {
   const openSidebar = useSidebar();
+  const { t, language } = useLanguage();
+  const dateData = getLocalizedDateData(language);
+  
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [dailyGoals, setDailyGoals] = useState([]);
   const [weeklyData, setWeeklyData] = useState({});
@@ -27,12 +103,20 @@ export default function GoalJournalPage() {
   const [error, setError] = useState('');
   const [viewMode, setViewMode] = useState('detail'); // 'detail', 'weekly', 'monthly'
 
+  // Formatea una fecha a "YYYY-MM-DD" en zona horaria local (sin conversión a UTC)
+  function toLocalDateString(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   // Cargar goals del día seleccionado
   useEffect(() => {
     loadDailyGoals();
     if (viewMode === 'weekly') loadWeeklyData();
     if (viewMode === 'monthly') loadMonthlyData();
-  }, [selectedDate, viewMode]);
+  }, [selectedDate, viewMode, language]);
 
   const loadDailyGoals = async () => {
     try {
@@ -147,12 +231,11 @@ export default function GoalJournalPage() {
   const totalCount = dailyGoals.length;
 
   const formatDate = (date) => {
-    return date.toLocaleDateString('es-ES', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const dayName = dateData.daysFull[date.getDay() === 0 ? 6 : date.getDay() - 1];
+    const monthName = dateData.months[date.getMonth()];
+    const day = date.getDate();
+    const year = date.getFullYear();
+    return `${dayName}, ${day} ${t('dateOf')} ${monthName} ${t('dateOf')} ${year}`;
   };
 
   // Para vista semanal
@@ -202,9 +285,9 @@ export default function GoalJournalPage() {
       <div className="goal-journal-header">
         <div className="goal-journal-title-section">
           <BookOpen size={24} />
-          <h1>Diario de Goals</h1>
+          <h1>{t('goalJournalTitle')}</h1>
         </div>
-        <button className="btn-menu-trigger" onClick={openSidebar} aria-label="Abrir menú">
+        <button className="btn-menu-trigger" onClick={openSidebar} aria-label={t('logout')}>
           <Menu size={22} />
         </button>
       </div>
@@ -216,26 +299,26 @@ export default function GoalJournalPage() {
         <button
           className={`toggle-btn ${viewMode === 'detail' ? 'active' : ''}`}
           onClick={() => setViewMode('detail')}
-          title="Vista detallada"
+          title={t('detailView')}
         >
           <BookOpen size={16} />
-          Detalle
+          {t('detailView')}
         </button>
         <button
           className={`toggle-btn ${viewMode === 'weekly' ? 'active' : ''}`}
           onClick={() => setViewMode('weekly')}
-          title="Vista semanal"
+          title={t('weeklyView')}
         >
           <Calendar size={16} />
-          Semanal
+          {t('weeklyView')}
         </button>
         <button
           className={`toggle-btn ${viewMode === 'monthly' ? 'active' : ''}`}
           onClick={() => setViewMode('monthly')}
-          title="Vista mensual"
+          title={t('monthlyView')}
         >
           <Grid3x3 size={16} />
-          Mensual
+          {t('monthlyView')}
         </button>
       </div>
 
@@ -246,27 +329,27 @@ export default function GoalJournalPage() {
             <button
               className="goal-journal-nav-btn"
               onClick={handlePreviousDay}
-              title="Día anterior"
+              title={t('previousDay')}
             >
               <ChevronLeft size={20} />
             </button>
 
             <div className="goal-journal-date-display">
               <h2>{formatDate(selectedDate)}</h2>
-              {isToday && <span className="goal-journal-today-badge">Hoy</span>}
+              {isToday && <span className="goal-journal-today-badge">{t('today')}</span>}
             </div>
 
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextDay}
-              title="Día siguiente"
+              title={t('nextDay')}
             >
               <ChevronRight size={20} />
             </button>
           </div>
 
           {loading ? (
-            <div className="goal-journal-loading">Cargando...</div>
+            <div className="goal-journal-loading">{t('loading')}</div>
           ) : (
             <div className="goal-journal-content">
               <div className="goal-journal-summary">
@@ -288,7 +371,7 @@ export default function GoalJournalPage() {
                     </svg>
                     <div className="goal-journal-summary-text">
                       {totalCount === 0 ? (
-                        <span className="goal-journal-completed">Sin</span>
+                        <span className="goal-journal-completed">{t('noGoals')}</span>
                       ) : (
                         <>
                           <span className="goal-journal-completed">{completedCount}</span>
@@ -299,15 +382,15 @@ export default function GoalJournalPage() {
                   </div>
                   <p className="goal-journal-summary-label">
                     {totalCount === 0
-                      ? 'Sin goals'
-                      : `${completedCount} de ${totalCount} completados`}
+                      ? t('noGoals')
+                      : `${completedCount} ${t('ofCompleted')} ${totalCount} ${t('completed')}`}
                   </p>
                 </div>
               </div>
 
               {totalCount === 0 ? (
                 <div className="goal-journal-empty">
-                  <p>No hay goals registrados para este día</p>
+                  <p>{t('noGoalsRegistered')}</p>
                 </div>
               ) : (
                 <div className="goal-journal-list">
@@ -322,7 +405,7 @@ export default function GoalJournalPage() {
                       <div className="goal-journal-item-content">
                         <span className="goal-journal-item-label">{goal.label}</span>
                         <span className="goal-journal-item-status">
-                          {goal.done ? 'Completado' : 'No completado'}
+                          {goal.done ? t('completedStatus') : t('notCompleted')}
                         </span>
                       </div>
                     </div>
@@ -341,19 +424,19 @@ export default function GoalJournalPage() {
             <button
               className="goal-journal-nav-btn"
               onClick={handlePreviousWeek}
-              title="Semana anterior"
+              title={t('previousWeek')}
             >
               <ChevronLeft size={20} />
             </button>
 
             <div className="goal-journal-date-display">
-              <h2>Semana del {getWeekDays()[0].getDate()} al {getWeekDays()[6].getDate()}</h2>
+              <h2>{t('weekOf')} {getWeekDays()[0].getDate()} {t('next')} {getWeekDays()[6].getDate()}</h2>
             </div>
 
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextWeek}
-              title="Próxima semana"
+              title={t('nextWeek')}
             >
               <ChevronRight size={20} />
             </button>
@@ -383,7 +466,7 @@ export default function GoalJournalPage() {
                   }}
                   style={{ cursor: !isFuture ? 'pointer' : 'default' }}
                 >
-                  <div className="weekly-day-label">{DAYS_SHORT[idx]}</div>
+                  <div className="weekly-day-label">{dateData.daysShort[idx]}</div>
                   <div className="weekly-day-number">{day.getDate()}</div>
                   <div className="weekly-day-indicator">
                     {total === 0 ? (
@@ -411,19 +494,19 @@ export default function GoalJournalPage() {
             <button
               className="goal-journal-nav-btn"
               onClick={handlePreviousMonth}
-              title="Mes anterior"
+              title={t('previousMonth')}
             >
               <ChevronLeft size={20} />
             </button>
 
             <div className="goal-journal-date-display">
-              <h2>{MONTHS[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h2>
+              <h2>{dateData.months[selectedDate.getMonth()]} {selectedDate.getFullYear()}</h2>
             </div>
 
             <button
               className="goal-journal-nav-btn"
               onClick={handleNextMonth}
-              title="Próximo mes"
+              title={t('nextMonth')}
             >
               <ChevronRight size={20} />
             </button>
@@ -431,7 +514,7 @@ export default function GoalJournalPage() {
 
           <div className="goal-journal-monthly-calendar">
             <div className="calendar-weekdays">
-              {DAYS_FULL.map(day => (
+              {dateData.daysFull.map(day => (
                 <div key={day} className="calendar-weekday">{day.slice(0, 3)}</div>
               ))}
             </div>
