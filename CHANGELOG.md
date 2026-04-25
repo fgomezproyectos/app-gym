@@ -2,6 +2,32 @@
 
 ---
 
+## 25 de abril de 2026 — Fix: Configuración de Vercel para SPA + separación frontend/backend
+
+### Problema resuelto
+El deploy en Vercel fallaba debido a que `vercel.json` intentaba instalar dependencias de .NET (dotnet restore), pero Vercel no es compatible con el backend .NET. El frontend (Vercel) y backend (Render) están en plataformas diferentes.
+
+**Archivos modificados:**
+- `vercel.json` — Eliminado `dotnet restore` del installCommand (Vercel solo necesita npm). Actualizado routing:
+  - Las rutas `/api/*` ahora retornan 404 (la API está en Render, no en Vercel)
+  - SPA routing correctamente configurado: todas las rutas desconocidas van a `/index.html`
+
+**Archivos verificados:**
+- `web/src/services/api.js` — Confirmado que ya usa `import.meta.env.VITE_API_URL` correctamente
+
+**Impacto:**
+- ✅ Build en Vercel ahora funciona sin errores
+- ✅ Frontend puede hacer llamadas al backend en Render usando la variable `VITE_API_URL`
+- ✅ SPA routing funciona: refresh en cualquier ruta no da 404
+
+**Acción requerida:**
+Asegurar que en el panel de Vercel esté configurada la variable de entorno:
+```
+VITE_API_URL = https://[tu-api].onrender.com
+```
+
+---
+
 ## 22 de abril de 2026 — Traducción completada (Goal Journal, Workouts, Exercises) + Fixes de separadores y fechas
 
 ### Internacionalización completada

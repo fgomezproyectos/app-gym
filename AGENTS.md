@@ -190,3 +190,41 @@ git add . ; git commit -m "mensaje" ; git push
 
 - El usuario practica inglés: cuando escriba en inglés, corregir sus errores gramaticales o de vocabulario además de atender su petición.
 - Responder siempre en español salvo que el usuario escriba en inglés, en cuyo caso responder en inglés.
+
+---
+
+## 📋 Instrucción: Documentación en CHANGELOG.md
+
+**IMPORTANTE:** Todos los cambios realizados en el proyecto DEBEN ser documentados automáticamente en el archivo `CHANGELOG.md`.
+
+### Cuándo documentar:
+- ✅ Toda modificación de código (features, fixes, refactoring)
+- ✅ Cambios en configuración (appsettings.json, package.json, docker-compose.yml, etc.)
+- ✅ Actualizaciones de dependencias
+- ✅ Cambios en estructura del proyecto o migraciones de BD
+- ✅ Cambios significativos en documentación
+
+### Formato a seguir:
+1. **Encabezado:** `## [Fecha actual] — [Resumen breve del cambio]`
+2. **Secciones:** Agrupa cambios por tema o componente
+3. **Archivos modificados:** Lista cada archivo con detalles específicos de qué se cambió
+4. **Impacto:** Descripción breve del impacto o relevancia del cambio
+
+### Ejemplo de entrada:
+```markdown
+## 25 de abril de 2026 — Nueva API de usuarios + Fixes en validación
+
+### Descripción del cambio
+
+**Archivos modificados:**
+- `api/Controllers/UserController.cs` — creado nuevo controlador con CRUD completo
+- `api/DTOs/UserDto.cs` — DTO para serialización de usuarios
+- `web/src/pages/UsersPage.jsx` — nueva página de gestión de usuarios
+- `web/src/services/api.js` — nuevas funciones para llamadas a `/api/users`
+
+**Impacto:**
+- Los usuarios ahora pueden gestionar otros usuarios desde la UI
+- API lista para consumo desde frontend
+```
+
+**NOTA:** Esta documentación se hace automáticamente con cada cambio implementado, no es necesario pedirla explícitamente cada vez.

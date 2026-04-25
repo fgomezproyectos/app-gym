@@ -1,11 +1,11 @@
 {
   "buildCommand": "cd web && npm run build",
   "outputDirectory": "web/dist",
-  "installCommand": "cd web && npm install && cd ../api && dotnet restore",
+  "installCommand": "cd web && npm install",
   "routes": [
     {
       "src": "^/api/(.*)",
-      "dest": "/api/$1"
+      "status": 404
     },
     {
       "src": "/(.*)",
